@@ -38,7 +38,7 @@
   <div class="about-right">
 
     <p>
-      In <b>Barangay Canlandog</b>, Murcia, the health and safety of our children are at the 
+      In <b>Barangay Canlandog</b>, Murcia, the hesalth and safety of our children are at the 
       heart of our community. Infant vaccination is a vital step in protecting babies from 
       life-threatening diseases such as measles, polio, pneumonia, and tuberculosis. With proper 
       vaccination, we give our children the chance to grow healthy, strong, and free from 
