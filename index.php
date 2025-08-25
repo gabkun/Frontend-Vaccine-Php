@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="src/styles.css">
 
   <link rel="stylesheet" href="src/home.css">
+    <link rel="stylesheet" href="src/login.css">
 </head>
 <body>
 
