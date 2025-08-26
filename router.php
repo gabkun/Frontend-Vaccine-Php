@@ -23,6 +23,10 @@ switch ($request) {
     case '/admin':
         require __DIR__ . '/pages/admin/admindashboard.php';
         break;
+
+    case '/logout':
+        require __DIR__ . '/pages/admin/logout.php';
+        break;
     case '/contact':
         require __DIR__ . '/pages/contact.php';
         break;
