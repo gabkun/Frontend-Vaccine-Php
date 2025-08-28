@@ -20,13 +20,34 @@ switch ($request) {
     case '/register':
         require __DIR__ . '/pages/register.php';
         break;
+
+    // ======================
+    // 🔹 Admin Routes
+    // ======================
     case '/admin':
         require __DIR__ . '/pages/admin/admindashboard.php';
+        break;
+
+    case '/admin/infants':
+        require __DIR__ . '/pages/admin/pages/infants.php';
+        break;
+
+    case '/admin/vaccines':
+        require __DIR__ . '/pages/admin/pages/vaccines.php';
+        break;
+
+    case '/admin/midwives':
+        require __DIR__ . '/pages/admin/pages/midwives.php';
+        break;
+
+    case '/admin/schedules':
+        require __DIR__ . '/pages/admin/pages/schedules.php';
         break;
 
     case '/logout':
         require __DIR__ . '/pages/admin/logout.php';
         break;
+
     case '/contact':
         require __DIR__ . '/pages/contact.php';
         break;
