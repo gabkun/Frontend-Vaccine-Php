@@ -2,28 +2,29 @@
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST["username"];
-    $password = $_POST["password"];
+    $username = trim($_POST["username"]);
+    $password = trim($_POST["password"]);
 
     // API endpoint (Express backend)
     $url = "http://localhost:8080/auth/login";
 
     // Data to send
-    $data = array(
+    $data = [
         "username" => $username,
         "password" => $password
-    );
+    ];
 
-    $options = array(
-        "http" => array(
+    $options = [
+        "http" => [
             "header"  => "Content-Type: application/json\r\n",
             "method"  => "POST",
-            "content" => json_encode($data)
-        )
-    );
+            "content" => json_encode($data),
+            "ignore_errors" => true // so file_get_contents won't just fail on 400/401
+        ]
+    ];
 
     $context  = stream_context_create($options);
-    $result = file_get_contents($url, false, $context);
+    $result = @file_get_contents($url, false, $context);
 
     if ($result === FALSE) {
         echo "<script>alert('Error connecting to API');</script>";
@@ -39,11 +40,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: /admin");
             exit;
         } else {
-            echo "<script>alert('".$response["message"]."');</script>";
+            // Show API error message if exists
+            $msg = isset($response["message"]) ? $response["message"] : "Invalid login attempt";
+            echo "<script>alert('".$msg."');</script>";
         }
     }
 }
 ?>
+
+<script>
+  // 🔒 Prevent going back after logout (extra UX protection)
+  window.history.pushState(null, "", window.location.href);
+  window.onpopstate = function () {
+    window.history.go(1);
+  };
+</script>
+
 <!-- Background --> 
 <div class="login-background"></div>
 

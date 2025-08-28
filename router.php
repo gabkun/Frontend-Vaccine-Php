@@ -43,6 +43,9 @@ switch ($request) {
     case '/admin/schedules':
         require __DIR__ . '/pages/admin/pages/schedules.php';
         break;
+    case '/admin/puroks':
+        require __DIR__ . '/pages/admin/pages/puroks.php';
+        break;
 
     case '/logout':
         require __DIR__ . '/pages/admin/logout.php';

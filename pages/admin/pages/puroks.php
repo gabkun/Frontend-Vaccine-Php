@@ -3,5 +3,5 @@
 
 <link rel="stylesheet" href="../../../src/admin/admin.css"> 
 <div class="main-content">
-  <h1>Vaccine Database</h1>
+  <h1>Purok Database</h1>
 </div>

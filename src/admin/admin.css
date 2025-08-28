@@ -18,6 +18,9 @@ body {
   box-sizing: border-box; /* prevent padding from causing overflow */
 }
 
+.sidebar a{
+  text-decoration: none;
+}
 
 .sidebar img {
   width: 98px;
