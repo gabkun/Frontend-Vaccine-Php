@@ -1,25 +1,43 @@
+/* ========== GLOBAL STYLES ========== */
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
   display: flex;
   height: 100vh;
+  background-color: #f5f5f5;
 }
 
-/* Sidebar */
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* ========== SIDEBAR ========== */
+.sidebar-container {
+  width: 400px;
+  flex-shrink: 0;
+  background-color: #23408e;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
 .sidebar {
   width: 403px;
-  height: 100vh; /* make it full height */
+  height: 100vh;
   background-color: #23408e; /* Blue */
   color: #fff;
   display: flex;
   flex-direction: column;
-  align-items: center;   /* keep content centered horizontally */
+  align-items: center;
   padding: 20px 0;
-  box-sizing: border-box; /* prevent padding from causing overflow */
-}
-
-.sidebar a{
-  text-decoration: none;
+  box-sizing: border-box;
 }
 
 .sidebar img {
@@ -36,10 +54,10 @@ body {
 .nav-btn {
   width: 330px;
   background: #f0c419; /* Yellow */
-  color: #ffff;
+  color: #fff;
   border: none;
   padding: 12px;
-  margin: 20px 0;
+  margin: 15px 0;
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
@@ -60,7 +78,7 @@ body {
   background: #f0c419;
   border: none;
   padding: 12px;
-  color: #ffff;
+  color: #fff;
   border-radius: 20px;
   font-size: 15px;
   font-weight: 600;
@@ -72,9 +90,322 @@ body {
   background: #e6b800;
 }
 
+/* ========== MAIN CONTENT ========== */
+.main-content {
+  flex: 1;
+  background-color: #f5f5f5;
 
+  overflow-y: auto;
+}
+
+/* Date & Time Display (Dashboard) */
 .date-time {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 20px;
+}
+
+/* ========== MIDWIFE DATABASE SECTION ========== */
+.midwife-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.midwife-header h1 {
+  font-size: 28px;
+  color: #000;
+  font-weight: 700;
+}
+
+.add-btn {
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 8px 25px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.add-btn:hover {
+  background: #43a047;
+}
+
+/* ========== MIDWIFE CARD LIST ========== */
+.midwife-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Individual Card */
+.midwife-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 25px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.midwife-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Image */
+.midwife-card img {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Info Section */
+.midwife-info {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.midwife-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.midwife-info p {
+  margin: 3px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.price {
+  font-weight: 700;
+  color: #000;
+}
+
+/* Action Buttons */
+.card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn,
+.delete-btn {
+  border: none;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.edit-btn {
+  background: #1a3cff;
+}
+
+.delete-btn {
+  background: #c00;
+}
+
+.edit-btn:hover,
+.delete-btn:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .nav-btn,
+  .logout-btn {
+    width: auto;
+    margin: 10px;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  .midwife-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .card-actions {
+    align-self: flex-end;
+  }
+}
+.midwife-content{
+    padding: 40px 60px;
+}
+
+/* ========== INFANT DATABASE SECTION ========== */
+.infant-content {
+  padding: 40px 60px;
+}
+
+.infant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.infant-header h1 {
+  font-size: 28px;
+  color: #000;
+  font-weight: 700;
+}
+
+.infant-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 30px;
+}
+
+/* Infant Card */
+.infant-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.infant-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.infant-card img {
+  width: 100%;
+  height: 180px;
+  border-radius: 10px;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.infant-info h3 {
+  margin: 5px 0 3px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+}
+
+.infant-info p {
+  margin: 0 0 15px;
+  color: #555;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.view-btn {
+  background: #f0c419;
+  color: #fff;
+  border: none;
+  padding: 8px 25px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.view-btn:hover {
+  background: #e6b800;
+}
+
+/* ===========================
+   VACCINE DATABASE STYLES
+=========================== */
+.vaccine-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.vaccine-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.vaccine-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.add-btn {
+  background-color: #6ecb63;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 20px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-btn:hover {
+  background-color: #5ab950;
+}
+
+.vaccine-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 30px;
+}
+
+.vaccine-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vaccine-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.vaccine-card img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.vaccine-card p {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+  line-height: 1.3em;
+}
+
+.vaccine-content{
+    padding: 40px 60px;
 }
