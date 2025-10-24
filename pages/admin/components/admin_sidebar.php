@@ -3,12 +3,24 @@
   <img src="/assets/img/logo.png" alt="Logo">
   <h2>Admin Dashboard</h2>
 
-  <a href="/admin" class="nav-btn">Analytics</a>
-  <a href="/admin/infants" class="nav-btn">Infant Database</a>
-  <a href="/admin/vaccines" class="nav-btn">Vaccine Database</a>
-  <a href="/admin/puroks" class="nav-btn">Purok Database</a>
-  <a href="/admin/schedules" class="nav-btn">Vaccination Schedules</a>
-  <a href="/admin/midwives" class="nav-btn">Midwife Database</a>
+  <a href="/admin" class="nav-btn">
+    <img src="../../../src/img/analytics.png" alt="Analytics" class="nav-icon"> Analytics
+  </a>
+  <a href="/admin/infants" class="nav-btn">
+    <img src="../../../src/img/infant.png" alt="Infant Database" class="nav-icon"> Infant Database
+  </a>
+  <a href="/admin/vaccines" class="nav-btn">
+    <img src="../../../src/img/vaccine.png" alt="Vaccine Database" class="nav-icon"> Vaccine Database
+  </a>
+  <a href="/admin/puroks" class="nav-btn">
+    <img src="../../../src/img/purok.png" alt="Purok Database" class="nav-icon"> Purok Database
+  </a>
+  <a href="/admin/schedules" class="nav-btn">
+    <img src="../../../src/img/schedule.png" alt="Vaccination Schedules" class="nav-icon"> Vaccination Schedules
+  </a>
+  <a href="/admin/midwives" class="nav-btn">
+    <img src="../../../src/img/midwife.png" alt="Midwife Database" class="nav-icon"> Midwife Database
+  </a>
 
   <form method="POST" action="/logout">
     <button type="submit" class="logout-btn">Logout</button>
