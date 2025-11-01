@@ -552,3 +552,58 @@ a {
     width: 100%;
   }
 }
+
+/* ===============================
+   DASHBOARD ANALYTICS STYLES
+=============================== */
+
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card h3 {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.stat-card p {
+  font-size: 28px;
+  font-weight: 700;
+  color: #23408e;
+}
+
+/* ===============================
+   CHARTS SECTION
+=============================== */
+
+.charts-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.chart-card {
+  flex: 1;
+  min-width: 400px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-card h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #000;
+}

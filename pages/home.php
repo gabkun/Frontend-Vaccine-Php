@@ -16,11 +16,11 @@
   <!-- Paragraph below -->
   <div class="hero-description">
     <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-      dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip 
-      ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore 
-      eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia 
-      deserunt mollit anim id est laborum.
+The Infant Vaccination System in Barangay Canlandog, Murcia harnesses the power of technology to improve healthcare efficiency and accessibility for families. 
+Through its innovative scheduling system, parents can conveniently set appointments for their infants’ vaccinations without the need for manual coordination or 
+long waiting times at health centers. The system automatically sends appointment details and reminders via SMS, ensuring that parents are well-informed and timely 
+in bringing their children for immunization. This not only promotes better vaccine coverage and child health protection but also strengthens the barangay’s public 
+health management by reducing missed vaccinations and improving record accuracy.
     </p>
   </div>
    <div class="banner">

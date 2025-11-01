@@ -27,6 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_midwife"])) {
         "firstname" => $_POST["firstname"],
         "middlename" => $_POST["middlename"],
         "lastname" => $_POST["lastname"],
+        "age" => $_POST["age"],
         "dob" => $_POST["dob"],
         "gender" => $_POST["gender"],
         "address" => $_POST["address"],
