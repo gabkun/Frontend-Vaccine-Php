@@ -78,32 +78,44 @@ if ($getResult !== FALSE) {
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
-        <div class="vaccine-content">
-            <div class="vaccine-header">
-                <h1>Vaccine Database</h1>
-                <button class="add-btn">Add</button>
-            </div>
+<div class="main-content">
+  <div class="vaccine-content">
 
-            <div class="vaccine-list">
-
-                <?php if (!empty($vaccineData)): ?>
-                    <?php foreach ($vaccineData as $v): ?>
-                        <div class="vaccine-card">
-                            <img src="../../../src/assets/vaccine_sample.png" alt="<?= htmlspecialchars($v['vaccine_name']) ?>">
-                            <p><strong><?= htmlspecialchars($v['vaccine_name']) ?></strong></p>
-                            <small><?= htmlspecialchars($v['description'] ?? '') ?></small>
-                            <p>Status: <?= $v['status'] == 1 ? "Active" : "Inactive" ?></p>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <p>No vaccines found.</p>
-                <?php endif; ?>
-
-            </div>
-        </div>
+    <div class="vaccine-header">
+      <h1>Vaccine Database</h1>
+      <button class="add-btn">Add Vaccine</button>
     </div>
+
+    <div class="vaccine-list">
+      <?php if (!empty($vaccineData)): ?>
+        <?php foreach ($vaccineData as $v): ?>
+          <div class="vaccine-card">
+
+            <img 
+              src="../../../uploads/vaccine.png" 
+              alt="<?= htmlspecialchars($v['vaccine_name']) ?>"
+            >
+
+            <h2><?= htmlspecialchars($v['vaccine_name']) ?></h2>
+
+            <p class="description">
+              <?= htmlspecialchars($v['description'] ?? 'No description available') ?>
+            </p>
+
+            <p class="status <?= $v['status'] == 1 ? 'active' : 'inactive' ?>">
+              <?= $v['status'] == 1 ? 'Active' : 'Inactive' ?>
+            </p>
+
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p class="no-data">No vaccines found.</p>
+      <?php endif; ?>
+    </div>
+
+  </div>
 </div>
+
 
 
 <!-- ============================================================

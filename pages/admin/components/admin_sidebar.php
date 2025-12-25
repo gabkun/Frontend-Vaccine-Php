@@ -16,7 +16,7 @@
     <img src="../../../src/img/purok.png" alt="Purok Database" class="nav-icon"> Purok Database
   </a>
   <a href="/admin/schedules" class="nav-btn">
-    <img src="../../../src/img/schedule.png" alt="Vaccination Schedules" class="nav-icon"> Vaccination Schedules
+    <img src="../../../src/img/schedule.png" alt="Vaccination Schedules" class="nav-icon"> Create Vaccination
   </a>
   <a href="/admin/midwives" class="nav-btn">
     <img src="../../../src/img/midwife.png" alt="Midwife Database" class="nav-icon"> Midwife Database
