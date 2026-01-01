@@ -78,34 +78,34 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_midwife"])) {
         <button class="add-btn" id="openModal">Add</button>
       </div>
 
-      <div class="midwife-list">
-        <?php
-        $midwives = [
-          ["Jane Farrows", "https://via.placeholder.com/80"],
-          ["Jane Foster", "https://via.placeholder.com/80"],
-          ["Lex Green", "https://via.placeholder.com/80"],
-          ["John Blue", "https://via.placeholder.com/80"],
-          ["James Ocean", "https://via.placeholder.com/80"]
-        ];
+<div class="midwife-list">
+    <?php
+    // Fetch midwives from API
+    $apiUrl = "http://localhost:8080/midwife/get";
+    $midwives = json_decode(@file_get_contents($apiUrl), true);
 
+    if (!empty($midwives)):
         foreach ($midwives as $midwife): ?>
-          <div class="midwife-card">
-            <img src="<?= $midwife[1] ?>" alt="<?= $midwife[0] ?>">
-            <div class="midwife-info">
-              <h3><?= $midwife[0] ?></h3>
-              <p>Flight from India</p>
-              <p class="price">₱15,200</p>
-              <p>Direct</p>
+            <div class="midwife-card">
+                <img src="<?= htmlspecialchars($midwife['photo'] ?? 'https://via.placeholder.com/80') ?>" 
+                     alt="<?= htmlspecialchars($midwife['firstname'] . ' ' . $midwife['lastname']) ?>">
+                <div class="midwife-info">
+                    <h3><?= htmlspecialchars($midwife['firstname'] . ' ' . $midwife['middlename'] . ' ' . $midwife['lastname']) ?></h3>
+                    <p>Email: <?= htmlspecialchars($midwife['email']) ?></p>
+                    <p>Phone: <?= htmlspecialchars($midwife['phone']) ?></p>
+                    <p>Address: <?= htmlspecialchars($midwife['address']) ?></p>
+                    <p>Gender: <?= htmlspecialchars($midwife['gender']) ?></p>
+                    <p>Age: <?= htmlspecialchars($midwife['age']) ?></p>
+                </div>
+                <div class="card-actions">
+                    <button class="edit-btn">Edit</button>
+                    <button class="delete-btn">Delete</button>
+                </div>
             </div>
-            <div class="card-actions">
-              <button class="edit-btn">Edit</button>
-              <button class="delete-btn">Delete</button>
-            </div>
-          </div>
         <?php endforeach; ?>
-      </div>
-    </div>
-  </div>
+    <?php else: ?>
+        <p>No midwives found.</p>
+    <?php endif; ?>
 </div>
 
 <!-- ==============================

@@ -5,22 +5,36 @@ include __DIR__ . '/../auth/auth.php';
 // Handle Create Infant Form
 // =======================
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_infant"])) {
-    $uploadDir = __DIR__ . '/../../../uploads/';
-    if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+    // Base upload directory
+    $baseUploadDir = __DIR__ . '/../../../uploads/';
+    if (!is_dir($baseUploadDir)) mkdir($baseUploadDir, 0777, true);
+
+    // Subdirectories
+    $docDir = $baseUploadDir . 'documents/';
+    $photoDir = $baseUploadDir . 'photos/';
+
+    if (!is_dir($docDir)) mkdir($docDir, 0777, true);
+    if (!is_dir($photoDir)) mkdir($photoDir, 0777, true);
 
     $birthDocPath = null;
     $profilePicPath = null;
 
     // Birth document upload
     if (!empty($_FILES["birth_document"]["name"])) {
-        $birthDocPath = 'uploads/documents/' . basename($_FILES["birth_document"]["name"]);
-        move_uploaded_file($_FILES["birth_document"]["tmp_name"], __DIR__ . '/../../../' . $birthDocPath);
+        $birthDocName = basename($_FILES["birth_document"]["name"]);
+        $birthDocTarget = $docDir . $birthDocName;
+        if (move_uploaded_file($_FILES["birth_document"]["tmp_name"], $birthDocTarget)) {
+            $birthDocPath = 'uploads/documents/' . $birthDocName; // Relative path for API/frontend
+        }
     }
 
     // Profile picture upload
     if (!empty($_FILES["profile_pic"]["name"])) {
-        $profilePicPath = 'uploads/photos/' . basename($_FILES["profile_pic"]["name"]);
-        move_uploaded_file($_FILES["profile_pic"]["tmp_name"], __DIR__ . '/../../../' . $profilePicPath);
+        $profilePicName = basename($_FILES["profile_pic"]["name"]);
+        $profilePicTarget = $photoDir . $profilePicName;
+        if (move_uploaded_file($_FILES["profile_pic"]["tmp_name"], $profilePicTarget)) {
+            $profilePicPath = 'uploads/photos/' . $profilePicName; // Relative path for API/frontend
+        }
     }
 
     // Prepare data
@@ -88,7 +102,7 @@ $apiUrl = "http://localhost:8080/infant/get";
 $infantData = @file_get_contents($apiUrl);
 $infants = $infantData ? json_decode($infantData, true) : [];
 
-$staticAvatar = "../../../uploads/baby-avatar.png";
+$staticAvatar = "uploads/baby-avatar.png"; // default relative path
 ?>
 
 <link rel="stylesheet" href="../../../src/admin/admin.css">
@@ -114,7 +128,7 @@ $staticAvatar = "../../../uploads/baby-avatar.png";
                         $photo = !empty($infant["profile_pic"]) ? "../../../" . $infant["profile_pic"] : $staticAvatar;
                 ?>
                     <div class="infant-card">
-                        <img src="<?= $staticAvatar ?>" alt="<?= $name ?>">
+                        <img src="<?= $photo ?>" alt="<?= $name ?>">
                         <div class="infant-info">
                             <h3><?= $name ?></h3>
                             <p>Purok: <?= $purok_name ?></p>
