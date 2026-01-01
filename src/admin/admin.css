@@ -1211,3 +1211,141 @@ a {
     .vax-empty-cell {
       visibility: hidden;
     }
+
+    
+    /* ===============================
+       VACCINATION CALENDAR
+    ================================ */
+    .vax-monthly-calendar {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .vax-calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .vax-calendar-nav button {
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .vax-calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .vax-calendar-weekday {
+      font-weight: 600;
+      text-align: center;
+      padding: 8px 0;
+      background: #f1f1f1;
+    }
+
+    .vax-calendar-day {
+      min-height: 110px;
+      border: 1px solid #ddd;
+      padding: 6px;
+      border-radius: 6px;
+      position: relative;
+      background: #fafafa;
+    }
+
+    .vax-calendar-day.today {
+      border: 2px solid #007bff;
+    }
+
+    .vax-calendar-day-number {
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .vax-schedule-item {
+      background: #e7f1ff;
+      padding: 4px 6px;
+      margin-bottom: 4px;
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .vax-schedule-item:hover {
+      background: #cfe2ff;
+    }
+
+    .vax-empty-cell {
+      background: transparent;
+    }
+
+    /* ===============================
+       MODAL
+    ================================ */
+    .vax-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vax-modal-content {
+      background: #fff;
+      padding: 24px;
+      width: 420px;
+      border-radius: 10px;
+      position: relative;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .vax-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .vax-modal-body p {
+      margin: 12px 0;
+      font-size: 15px;
+    }
+
+    @keyframes fadeIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+        .vax-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-edit {
+      background: #0d6efd;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-delete {
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-edit:hover { background: #0b5ed7; }
+    .btn-delete:hover { background: #bb2d3b; }

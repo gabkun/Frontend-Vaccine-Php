@@ -55,6 +55,26 @@ switch ($request) {
         require __DIR__ . '/pages/contact.php';
         break;
 
+    // ======================
+    // 🔹 Midwife Routes
+    // ======================
+    case '/midwife':
+        require __DIR__ . '/pages/midwife/midwifedashboard.php';
+        break;
+
+    case '/midwife/infants':
+        require __DIR__ . '/pages/midwife/pages/infants.php';
+        break;
+
+
+    case '/midwife/schedules':
+        require __DIR__ . '/pages/midwife/pages/schedules.php';
+        break;
+
+    case '/midwifelogout':
+        require __DIR__ . '/pages/midwife/logout.php';
+        break;
+
     default:
         http_response_code(404);
         echo "<h1>404 Not Found</h1>";

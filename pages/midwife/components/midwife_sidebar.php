@@ -4,13 +4,13 @@
   <h2>Midwife Dashboard</h2>
 
 
-  <a href="/admin/infants" class="nav-btn">
+  <a href="/midwife/infants" class="nav-btn">
     <img src="../../../src/img/infant.png" alt="Infant Database" class="nav-icon"> Infant Database
   </a>
-  <a href="/admin/vaccines" class="nav-btn">
+  <a href="/midwife/vaccines" class="nav-btn">
     <img src="../../../src/img/vaccine.png" alt="Vaccine Database" class="nav-icon"> Vaccine Database
   </a>
-  <a href="/admin/schedules" class="nav-btn">
+  <a href="/midwife/schedules" class="nav-btn">
     <img src="../../../src/img/schedule.png" alt="Vaccination Schedules" class="nav-icon"> Vaccination Schedules
   </a>
 
