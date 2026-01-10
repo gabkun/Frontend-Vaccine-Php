@@ -154,24 +154,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_vaccination"])
         <div class="schedule-form-group">
             <label>Status</label>
             <select name="status" required>
-                <option value="0">Cancelled</option>
                 <option value="1">Scheduled</option>
+                <option value="0">Cancelled</option>
                 <option value="2">Completed</option>
             </select>
         </div>
 
-        <!-- Completed At -->
-        <div class="schedule-form-group">
-            <label>Completed At (optional)</label>
-            <input type="datetime-local" name="completed_at">
-        </div>
-
-        <!-- Remarks -->
-        <div class="schedule-form-group">
-            <label>Remarks</label>
-            <textarea name="remarks" rows="3"></textarea>
-        </div>
-
+ 
         <button type="submit" name="create_vaccination" class="schedule-btn">
             Save Schedule
         </button>

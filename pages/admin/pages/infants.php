@@ -339,32 +339,27 @@ function loadInfantInfo(infantId) {
             // MOTHER
             document.getElementById("infantMother").textContent =
                 `${data.m_firstname} ${data.m_middlename ?? ""} ${data.m_lastname}`.trim();
-
-            // MOTHER CONTACT
-            document.getElementById("infantMotherContact").textContent =
-                data.m_contact ?? "N/A";
+            document.getElementById("infantMotherContact").textContent = data.m_contact ?? "N/A";
 
             // FATHER
             document.getElementById("infantFather").textContent =
                 `${data.f_firstname} ${data.f_middlename ?? ""} ${data.f_lastname}`.trim();
+            document.getElementById("infantFatherContact").textContent = data.f_contact ?? "N/A";
 
-            // FATHER CONTACT
-            document.getElementById("infantFatherContact").textContent =
-                data.f_contact ?? "N/A";
-
-            // BIRTH DOCUMENT
+            // BIRTH DOCUMENT stays dynamic if you want
             const birthDocElem = document.getElementById("birthDocument");
-            if (data.birth_document) {
-                birthDocElem.src = data.birth_document;
+            if (data.birth_document && data.birth_document !== "") {
+                birthDocElem.src = `http://localhost:8080/${data.birth_document}`;
                 birthDocElem.alt = "Birth Document";
+            } else {
+                birthDocElem.src = "../../../assets/img/logo.png"; // fallback
+                birthDocElem.alt = "No Birth Document";
             }
 
-            // PROFILE PICTURE
+            // PROFILE PICTURE always static
             const profilePicElem = document.getElementById("profilePic");
-            if (data.profile_pic) {
-                profilePicElem.src = data.profile_pic;
-                profilePicElem.alt = "Infant Profile Picture";
-            }
+            profilePicElem.src = "../../../assets/img/logo.png"; // static image
+            profilePicElem.alt = "Infant Profile Picture";
         })
         .catch(err => {
             console.error(err);

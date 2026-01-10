@@ -68,7 +68,7 @@ switch ($request) {
 
 
     case '/midwife/schedules':
-        require __DIR__ . '/pages/midwife/pages/schedules.php';
+        require __DIR__ . '/pages/midwife/pages/schedule.php';
         break;
 
     case '/midwifelogout':
