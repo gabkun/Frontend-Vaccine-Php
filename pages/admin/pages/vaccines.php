@@ -105,7 +105,10 @@ if ($getResult !== FALSE) {
             <p class="status <?= $v['status'] == 1 ? 'active' : 'inactive' ?>">
               <?= $v['status'] == 1 ? 'Active' : 'Inactive' ?>
             </p>
-
+                <div class="vax-card-actions">
+                <button type="button" class="vax-btn vax-btn-edit">Edit</button>
+                <button type="submit" class="vax-btn vax-btn-delete">Delete</button>
+                </div>
           </div>
         <?php endforeach; ?>
       <?php else: ?>

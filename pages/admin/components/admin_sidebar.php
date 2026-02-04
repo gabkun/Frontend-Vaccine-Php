@@ -4,7 +4,7 @@
   <h2>Admin Dashboard</h2>
 
   <a href="/admin" class="nav-btn">
-    <img src="../../../src/img/analytics.png" alt="Analytics" class="nav-icon"> Analytics
+    <img src="../../../src/img/analytics.png" alt="Analytics" class="nav-icon"> Vaccination Schedule
   </a>
   <a href="/admin/infants" class="nav-btn">
     <img src="../../../src/img/infant.png" alt="Infant Database" class="nav-icon"> Infant Database

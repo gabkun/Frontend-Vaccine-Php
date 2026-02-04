@@ -153,10 +153,11 @@ $staticAvatar = "uploads/baby-avatar.png"; // default relative path
 <div class="modal" id="addInfantModal">
     <div class="modal-content">
         <h2>Add New Infant Record</h2>
-        <form method="POST" enctype="multipart/form-data" class="modal-form">
+<form method="POST" enctype="multipart/form-data" class="modal-form" id="infantForm">
 
             <!-- Infant Info -->
             <div class="modal-row">
+                <input type="hidden" name="infant_id" id="infant_id">
                 <input type="text" name="firstname" placeholder="First Name" required>
                 <input type="text" name="middlename" placeholder="Middle Name">
                 <input type="text" name="lastname" placeholder="Last Name" required>
@@ -290,9 +291,34 @@ $staticAvatar = "uploads/baby-avatar.png"; // default relative path
 
 <!-- Modal Script -->
 <script>
+let formMode = "create"; // create | edit
+let editingInfantId = null;
+
 const infantModal = document.getElementById("addInfantModal");
 const openInfantBtn = document.getElementById("openInfantModal");
 const closeInfantBtn = document.getElementById("closeInfantModal");
+
+document.getElementById("infantForm").addEventListener("submit", function (e) {
+    if (formMode !== "edit") return; // let PHP handle CREATE
+
+    e.preventDefault(); // stop normal POST
+
+    const formData = new FormData(this);
+
+    fetch(`http://localhost:8080/infant/update/${editingInfantId}`, {
+        method: "PUT",
+        body: formData
+    })
+        .then(res => res.json())
+        .then(response => {
+            alert(response.message || "Infant updated successfully");
+            location.reload();
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Failed to update infant");
+        });
+});
 
 openInfantBtn.addEventListener("click", () => infantModal.style.display = "flex");
 closeInfantBtn.addEventListener("click", () => infantModal.style.display = "none");
@@ -405,7 +431,54 @@ function loadVaccinationRecords(infantId) {
    ACTION BUTTONS
 ====================== */
 function editInfant() {
-    window.location.href = `/infant/edit/${currentInfantId}`;
+    closeVaccinationModal();
+    formMode = "edit";
+    editingInfantId = currentInfantId;
+
+    // Open modal
+    const modal = document.getElementById("addInfantModal");
+    modal.style.display = "flex";
+
+    // Change modal title & button
+    modal.querySelector("h2").textContent = "Edit Infant Record";
+    modal.querySelector(".add-submit").textContent = "Update";
+
+    // Fetch infant data
+    fetch(`http://localhost:8080/infant/infant/profile/${editingInfantId}`)
+        .then(res => res.json())
+        .then(data => {
+            // BASIC INFO
+            document.querySelector('[name="firstname"]').value = data.firstname ?? "";
+            document.querySelector('[name="middlename"]').value = data.middlename ?? "";
+            document.querySelector('[name="lastname"]').value = data.lastname ?? "";
+            document.querySelector('[name="suffix"]').value = data.suffix ?? "";
+            document.querySelector('[name="sex"]').value = data.sex ?? "";
+document.querySelector('[name="dob"]').value =
+    data.dob ? data.dob.split("T")[0] : "";
+            document.querySelector('[name="age_year"]').value = data.age_year ?? "";
+            document.querySelector('[name="age_month"]').value = data.age_month ?? "";
+            document.querySelector('[name="purok_id"]').value = data.purok_id ?? "";
+            document.querySelector('[name="home_add"]').value = data.home_add ?? "";
+
+            // FATHER
+            document.querySelector('[name="f_firstname"]').value = data.f_firstname ?? "";
+            document.querySelector('[name="f_middlename"]').value = data.f_middlename ?? "";
+            document.querySelector('[name="f_lastname"]').value = data.f_lastname ?? "";
+            document.querySelector('[name="f_contact"]').value = data.f_contact ?? "";
+
+            // MOTHER
+            document.querySelector('[name="m_firstname"]').value = data.m_firstname ?? "";
+            document.querySelector('[name="m_middlename"]').value = data.m_middlename ?? "";
+            document.querySelector('[name="m_lastname"]').value = data.m_lastname ?? "";
+            document.querySelector('[name="m_contact"]').value = data.m_contact ?? "";
+
+            // Store ID
+            document.getElementById("infant_id").value = editingInfantId;
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Failed to load infant data for editing");
+        });
 }
 
 function deleteInfant() {
@@ -451,9 +524,6 @@ function downloadRecord() {
 }
 </script>
 <script>
-function editInfant() {
-    window.location.href = `/infant/edit/${currentInfantId}`;
-}
 
 function deleteInfant() {
     if (!confirm("Are you sure you want to delete this infant record?")) return;
