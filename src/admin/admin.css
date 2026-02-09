@@ -310,12 +310,70 @@ a {
   font-weight: 700;
 }
 
-.infant-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 30px;
+
+.infant-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
+.infant-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.infant-table thead {
+  background: #f4f6f8;
+}
+
+.infant-table th,
+.infant-table td {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 14px;
+  color: #333;
+}
+
+.infant-table th {
+  font-weight: 600;
+  color: #555;
+}
+
+.infant-table tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+.infant-table tbody tr:hover {
+  background: #fafafa;
+}
+
+/* Avatar */
+.infant-avatar {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+}
+
+/* View Button */
+.view-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #4f46e5;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.view-btn:hover {
+  background: #4338ca;
+}
 /* Infant Card */
 .infant-card {
   background: #fff;
@@ -324,6 +382,33 @@ a {
   text-align: center;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.infant-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.infant-card img {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.infant-info h3 {
+  margin: 5px 0 3px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+}
+
+.infant-info p {
+  margin: 0 0 15px;
+  color: #555;
+  font-size: 14px;
+  font-style: italic;
 }
 
 .infant-card:hover {
@@ -369,9 +454,219 @@ a {
   background: #e6b800;
 }
 
+/*Purok */
+.purok-content {
+  padding: 40px 60px;
+}
+
+.purok-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.purok-header h1 {
+  font-size: 28px;
+  color: #000;
+  font-weight: 700;
+}
+
+.purok-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 30px;
+}
+
+/* Infant Card */
+.purok-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.purok-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.purok-card img {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.purok-info h3 {
+  margin: 5px 0 3px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+}
+
+.purok-info p {
+  margin: 0 0 15px;
+  color: #555;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Folder Style */
+.purok-folder {
+  background: #fff;
+  border-radius: 10px;
+  padding: 25px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,.1);
+  transition: all .2s ease;
+}
+
+.purok-folder:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0,0,0,.15);
+}
+
+.folder-icon {
+  font-size: 50px;
+}
+
+.folder-name {
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+/* Modal */
+.purok-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 1000;
+}
+
+.purok-modal-content.wide {
+  background: #fff;
+  margin: 5% auto;
+  padding: 30px;
+  width: 85%;
+  border-radius: 12px;
+}
+
+/* Table */
+.purok-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.purok-table th,
+.purok-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.purok-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
 /* ===========================
    VACCINE DATABASE STYLES
 =========================== */
+
+.vaccine-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.vaccine-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.vaccine-table thead {
+  background: #f4f6f8;
+}
+
+.vaccine-table th,
+.vaccine-table td {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+  color: #333;
+}
+
+.vaccine-table th {
+  font-weight: 600;
+  color: #555;
+}
+
+.vaccine-table tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+.vaccine-table tbody tr:hover {
+  background: #fafafa;
+}
+
+/* Vaccine image */
+.vaccine-avatar {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+/* Status */
+.vaccine-table td.active {
+  color: #2e9e4f;
+  font-weight: 600;
+}
+
+.vaccine-table td.inactive {
+  color: #c0392b;
+  font-weight: 600;
+}
+
+/* Buttons */
+.vax-btn {
+  padding: 5px 10px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.vax-btn-edit {
+  background: #4f46e5;
+  color: #fff;
+}
+
+.vax-btn-edit:hover {
+  background: #4338ca;
+}
+
+.vax-btn-delete {
+  background: #e53e3e;
+  color: #fff;
+}
+
+.vax-btn-delete:hover {
+  background: #c53030;
+}
+
 .vaccine-content {
   padding: 40px 60px;
   display: flex;

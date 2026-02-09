@@ -86,35 +86,45 @@ if ($getResult !== FALSE) {
       <button class="add-btn">Add Vaccine</button>
     </div>
 
-    <div class="vaccine-list">
-      <?php if (!empty($vaccineData)): ?>
-        <?php foreach ($vaccineData as $v): ?>
-          <div class="vaccine-card">
-
-            <img 
-              src="../../../uploads/vaccine.png" 
-              alt="<?= htmlspecialchars($v['vaccine_name']) ?>"
-            >
-
-            <h2><?= htmlspecialchars($v['vaccine_name']) ?></h2>
-
-            <p class="description">
-              <?= htmlspecialchars($v['description'] ?? 'No description available') ?>
-            </p>
-
-            <p class="status <?= $v['status'] == 1 ? 'active' : 'inactive' ?>">
-              <?= $v['status'] == 1 ? 'Active' : 'Inactive' ?>
-            </p>
-                <div class="vax-card-actions">
-                <button type="button" class="vax-btn vax-btn-edit">Edit</button>
-                <button type="submit" class="vax-btn vax-btn-delete">Delete</button>
-                </div>
-          </div>
-        <?php endforeach; ?>
-      <?php else: ?>
+<div class="vaccine-table-wrapper">
+    <?php if (!empty($vaccineData)): ?>
+        <table class="vaccine-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Vaccine Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($vaccineData as $v): ?>
+                <tr>
+                    <td>
+                        <img 
+                            src="../../../uploads/vaccine.png" 
+                            alt="<?= htmlspecialchars($v['vaccine_name']) ?>" 
+                            class="vaccine-avatar"
+                        >
+                    </td>
+                    <td><?= htmlspecialchars($v['vaccine_name']) ?></td>
+                    <td><?= htmlspecialchars($v['description'] ?? 'No description available') ?></td>
+                    <td class="<?= $v['status'] == 1 ? 'active' : 'inactive' ?>">
+                        <?= $v['status'] == 1 ? 'Active' : 'Inactive' ?>
+                    </td>
+                    <td>
+                        <button type="button" class="vax-btn vax-btn-edit">Edit</button>
+                        <button type="submit" class="vax-btn vax-btn-delete">Delete</button>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
         <p class="no-data">No vaccines found.</p>
-      <?php endif; ?>
-    </div>
+    <?php endif; ?>
+</div>
 
   </div>
 </div>

@@ -119,30 +119,47 @@ $staticAvatar = "uploads/baby-avatar.png"; // default relative path
                 <button class="add-btn" id="openInfantModal">Add</button>
             </div>
 
-            <div class="infant-list">
-                <?php if (!empty($infants)):
-                    foreach ($infants as $infant):
-                        $name = htmlspecialchars($infant["firstname"] . " " . $infant["lastname"]);
-                        $purok_id = $infant["purok_id"];
-                        $purok_name = isset($purokMap[$purok_id]) ? htmlspecialchars($purokMap[$purok_id]) : "Unknown";
-                        $photo = !empty($infant["profile_pic"]) ? "../../../" . $infant["profile_pic"] : $staticAvatar;
+         <div class="infant-table-wrapper">
+    <?php if (!empty($infants)): ?>
+        <table class="infant-table">
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Full Name</th>
+                    <th>Purok</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($infants as $infant):
+                    $name = htmlspecialchars($infant["firstname"] . " " . $infant["lastname"]);
+                    $purok_id = $infant["purok_id"];
+                    $purok_name = isset($purokMap[$purok_id]) ? htmlspecialchars($purokMap[$purok_id]) : "Unknown";
+                    $photo = !empty($infant["profile_pic"]) ? "../../../" . $infant["profile_pic"] : $staticAvatar;
                 ?>
-                    <div class="infant-card">
-                        <img src="<?= $photo ?>" alt="<?= $name ?>">
-                        <div class="infant-info">
-                            <h3><?= $name ?></h3>
-                            <p>Purok: <?= $purok_name ?></p>
-                            <button class="view-btn" onclick="openVaccinationModal(<?= $infant['id'] ?>)">
-                            View
-                        </button>
-                        </div>
-                    </div>
-                <?php
-                    endforeach;
-                else:
-                    echo "<p>No infant records found.</p>";
-                endif; ?>
-            </div>
+                <tr>
+                    <td>
+                        <img src="<?= $photo ?>" alt="<?= $name ?>" class="infant-avatar">
+                    </td>
+                    <td><?= $name ?></td>
+                    <td><?= $purok_name ?></td>
+                    <td>
+<button class="view-btn"
+    onclick="openVaccinationModal(
+        <?= $infant['id'] ?>,
+        '<?= htmlspecialchars($photo, ENT_QUOTES) ?>'
+    )">
+    View
+</button>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <p>No infant records found.</p>
+    <?php endif; ?>
+</div>
         </div>
     </div>
 </div>
@@ -327,11 +344,19 @@ window.addEventListener("click", (e) => { if (e.target === infantModal) infantMo
 <script>
 let currentInfantId = null;
 
-function openVaccinationModal(infantId) {
+function openVaccinationModal(infantId, profilePic) {
     currentInfantId = infantId;
+
+    // Open modal
     document.getElementById("viewVaccinationModal").style.display = "flex";
     document.body.style.overflow = "hidden";
 
+    // Set the profile picture passed from the button
+    const profilePicElem = document.getElementById("profilePic");
+    profilePicElem.src = profilePic || "../../../assets/img/logo.png";
+    profilePicElem.alt = "Infant Profile Picture";
+
+    // Load rest of the infant info via API
     loadInfantInfo(infantId);
     loadVaccinationRecords(infantId);
 }
@@ -382,10 +407,7 @@ function loadInfantInfo(infantId) {
                 birthDocElem.alt = "No Birth Document";
             }
 
-            // PROFILE PICTURE always static
-            const profilePicElem = document.getElementById("profilePic");
-            profilePicElem.src = "../../../assets/img/logo.png"; // static image
-            profilePicElem.alt = "Infant Profile Picture";
+
         })
         .catch(err => {
             console.error(err);
