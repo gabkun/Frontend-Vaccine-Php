@@ -69,6 +69,7 @@
 
     <!-- ACTION BUTTONS -->
     <div class="vax-modal-actions">
+      <button class="btn-done" onclick="markAsDone()">Mark as Done</button>
       <button class="btn-edit" onclick="editSchedule()">Edit</button>
       <button class="btn-delete" onclick="deleteSchedule()">Delete</button>
     </div>
@@ -161,6 +162,39 @@ async function renderVaxCalendar() {
     `;
   }
 }
+
+async function markAsDone() {
+  const scheduleId = document.getElementById("modalScheduleId").value;
+  if (!scheduleId) return alert("Schedule ID not found.");
+
+  // Optional: ask for remarks
+  const remarks = prompt("Enter remarks (optional):");
+
+  try {
+    const response = await fetch(`http://localhost:8080/schedule/schedule/complete/${scheduleId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ remarks })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message || "Failed to mark as done.");
+      return;
+    }
+
+    alert(data.message || "Schedule marked as completed!");
+    closeVaxModal();
+    renderVaxCalendar(); // Refresh the calendar to reflect status change
+  } catch (err) {
+    console.error(err);
+    alert("Error connecting to API.");
+  }
+}
+
 
 /* ===============================
    MODAL FUNCTIONS

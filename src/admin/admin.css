@@ -1680,6 +1680,15 @@ a {
       cursor: pointer;
     }
 
+    .btn-done {
+      background: #14ad28;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
     .btn-delete {
       background: #dc3545;
       color: #fff;
@@ -1691,3 +1700,4 @@ a {
 
     .btn-edit:hover { background: #0b5ed7; }
     .btn-delete:hover { background: #bb2d3b; }
+    .btn-done:hover { background: #19990d; }

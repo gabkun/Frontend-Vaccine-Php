@@ -144,11 +144,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_vaccination"])
             </select>
         </div>
 
-        <!-- Scheduled Date -->
-        <div class="schedule-form-group">
-            <label>Scheduled Date</label>
-            <input type="date" name="scheduled_on" required>
-        </div>
+<div class="schedule-form-group">
+    <label>Scheduled Date</label>
+    <input 
+        type="date" 
+        name="scheduled_on" 
+        required 
+        id="scheduledDateInput"
+    >
+</div>
 
         <!-- Status -->
         <div class="schedule-form-group">
@@ -168,3 +172,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_vaccination"])
     </form>
 </div>
 </div>
+
+<script>
+// Automatically set the minimum date to 3 days from today
+const scheduledDateInput = document.getElementById("scheduledDateInput");
+
+const today = new Date();
+today.setDate(today.getDate() + 3); // Add 3 days
+
+// Format date as yyyy-mm-dd
+const minDate = today.toISOString().split("T")[0];
+
+scheduledDateInput.setAttribute("min", minDate);
+</script>
