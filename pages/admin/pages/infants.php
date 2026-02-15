@@ -136,6 +136,7 @@ $staticAvatar = "uploads/baby-avatar.png"; // default relative path
                     $purok_id = $infant["purok_id"];
                     $purok_name = isset($purokMap[$purok_id]) ? htmlspecialchars($purokMap[$purok_id]) : "Unknown";
                     $photo = !empty($infant["profile_pic"]) ? "../../../" . $infant["profile_pic"] : $staticAvatar;
+                    $document = !empty($infant["birth_document"]) ? "../../../" . $infant["birth_document"] : $staticAvatar;
                 ?>
                 <tr>
                     <td>
@@ -147,7 +148,8 @@ $staticAvatar = "uploads/baby-avatar.png"; // default relative path
 <button class="view-btn"
     onclick="openVaccinationModal(
         <?= $infant['id'] ?>,
-        '<?= htmlspecialchars($photo, ENT_QUOTES) ?>'
+        '<?= htmlspecialchars($photo, ENT_QUOTES) ?>',
+        '<?= htmlspecialchars($document, ENT_QUOTES) ?>'
     )">
     View
 </button>
@@ -204,7 +206,22 @@ $staticAvatar = "uploads/baby-avatar.png"; // default relative path
             </div>
 
             <div class="modal-row">
-                <input type="number" name="purok_id" placeholder="Purok ID" required>
+                <select name="purok_id" required>
+                    <option value="" disabled selected>Select Purok</option>
+                    <option value="1">Purok Monarch</option>
+                    <option value="2">Purok Mainswagon</option>
+                    <option value="3">Purok Maliayon</option>
+                    <option value="4">Purok Benedicto</option>
+                    <option value="5">Purok Tunay</option>
+                    <option value="6">Purok Paho</option>
+                    <option value="7">Purok Halandumon</option>
+                    <option value="8">Purok Mary</option>
+                    <option value="9">Purok Hda. Paz</option>
+                    <option value="10">Purok Nato</option>
+                    <option value="11">Purok Lopues</option>
+                    <option value="12">Purok Antawan</option>
+                </select>
+
                 <input type="text" name="home_add" placeholder="Home Address">
             </div>
 
@@ -280,7 +297,9 @@ $staticAvatar = "uploads/baby-avatar.png"; // default relative path
                     <button class="edit-btn" onclick="editInfant()">Edit</button>
                     <button class="delete-btn" onclick="deleteInfant()">Delete</button>
                     <button class="download-btn" onclick="downloadRecord()">Download Record</button>
-                    <button class="birth-btn" onclick="viewBirthCert()">View Birth Certificate</button>
+                <button id="viewBirthCertBtn" class="birth-btn">
+                    View Birth Certificate
+                </button>
                 </div>
             </div>
 
@@ -306,7 +325,8 @@ $staticAvatar = "uploads/baby-avatar.png"; // default relative path
     </div>
 </div>
 
-<!-- Modal Script -->
+
+
 <script>
 let formMode = "create"; // create | edit
 let editingInfantId = null;
@@ -340,25 +360,58 @@ document.getElementById("infantForm").addEventListener("submit", function (e) {
 openInfantBtn.addEventListener("click", () => infantModal.style.display = "flex");
 closeInfantBtn.addEventListener("click", () => infantModal.style.display = "none");
 window.addEventListener("click", (e) => { if (e.target === infantModal) infantModal.style.display = "none"; });
+
+function viewBirthCert(filePath) {
+  if (!filePath || filePath.includes('avatar')) {
+    alert('No birth certificate uploaded.');
+    return;
+  }
+
+  const link = document.createElement('a');
+  link.href = filePath;
+  link.download = filePath.split('/').pop(); // filename
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 </script>
 <script>
 let currentInfantId = null;
 
-function openVaccinationModal(infantId, profilePic) {
+function openVaccinationModal(infantId, profilePic, birthCert) {
     currentInfantId = infantId;
 
     // Open modal
     document.getElementById("viewVaccinationModal").style.display = "flex";
     document.body.style.overflow = "hidden";
 
-    // Set the profile picture passed from the button
+    // Profile picture
     const profilePicElem = document.getElementById("profilePic");
     profilePicElem.src = profilePic || "../../../assets/img/logo.png";
     profilePicElem.alt = "Infant Profile Picture";
 
-    // Load rest of the infant info via API
+    // Birth certificate download button
+    const birthBtn = document.getElementById("viewBirthCertBtn");
+
+    if (birthCert && !birthCert.includes("logo.png")) {
+        birthBtn.style.display = "inline-block";
+        birthBtn.onclick = () => downloadBirthCert(birthCert);
+    } else {
+        birthBtn.style.display = "none";
+    }
+
+    // Load rest via API
     loadInfantInfo(infantId);
     loadVaccinationRecords(infantId);
+}
+
+function downloadBirthCert(filePath) {
+    const link = document.createElement("a");
+    link.href = filePath;
+    link.download = filePath.split("/").pop();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 /* ======================
@@ -514,9 +567,7 @@ function deleteInfant() {
         });
 }
 
-function downloadRecord() {
-    window.open(`/infant/${currentInfantId}/download`, "_blank");
-}
+
 
 function viewBirthCert() {
     window.open(`/infant/${currentInfantId}/birth-certificate`, "_blank");
@@ -527,22 +578,396 @@ function closeVaccinationModal() {
     document.body.style.overflow = "auto";
 }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-function viewBirthCert() {
-    if (!birthDocumentPath) {
-        alert("No birth certificate uploaded.");
-        return;
+async function downloadRecord() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("p", "mm", "a4");
+
+  // =========================
+  // HELPERS
+  // =========================
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+
+  const M = 15;                     // margin
+  const contentW = pageW - M * 2;
+
+  const COLORS = {
+    primary: [22, 101, 52],         // deep green
+    light:   [240, 253, 244],       // very light green
+    border:  [30, 41, 59],          // slate
+    gray:    [71, 85, 105],
+    line:    [203, 213, 225],
+    headerBg:[220, 252, 231]
+  };
+
+  const setColor = (type, rgb) => {
+    if (type === "fill") doc.setFillColor(...rgb);
+    if (type === "draw") doc.setDrawColor(...rgb);
+    if (type === "text") doc.setTextColor(...rgb);
+  };
+
+  let y = 18;
+  const ensurePageSpace = (needed) => {
+    if (y + needed > pageH - 18) {
+      doc.addPage();
+      y = 18;
+
+      // frame on new page
+      doc.setLineWidth(0.6);
+      setColor("draw", COLORS.line);
+      doc.roundedRect(M - 2, 10, pageW - (M - 2) * 2, pageH - 18, 3, 3);
+    }
+  };
+
+  const split = (text, maxW) => doc.splitTextToSize(String(text ?? ""), maxW);
+  const safeText = (id) => (document.getElementById(id)?.textContent || "").trim();
+
+  async function loadImageAsDataURL(url) {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  // =========================
+  // DATA
+  // =========================
+  const name = safeText("infantName");
+  const sex = safeText("infantSex");
+  const dob = safeText("infantDob");
+  const age = safeText("infantAge");
+  const address = safeText("infantPob");
+  const mother = safeText("infantMother");
+  const motherContact = safeText("infantMotherContact");
+  const father = safeText("infantFather");
+  const fatherContact = safeText("infantFatherContact");
+
+  // =========================
+  // OUTER "BOOKLET" FRAME
+  // =========================
+  doc.setLineWidth(0.6);
+  setColor("draw", COLORS.line);
+  doc.roundedRect(M - 2, 10, pageW - (M - 2) * 2, pageH - 18, 3, 3);
+
+  // =========================
+  // HEADER
+  // =========================
+  let logoDataUrl = null;
+  try {
+    logoDataUrl = await loadImageAsDataURL("../../../assets/img/logo.png");
+  } catch (e) {
+    logoDataUrl = null;
+  }
+
+  setColor("fill", COLORS.headerBg);
+  setColor("draw", COLORS.line);
+  doc.roundedRect(M, y - 8, contentW, 34, 2.5, 2.5, "FD");
+
+  if (logoDataUrl) {
+    doc.addImage(logoDataUrl, "PNG", M + 4, y - 4, 22, 22);
+  }
+
+  doc.setFont("helvetica", "bold");
+  setColor("text", COLORS.border);
+  doc.setFontSize(12);
+
+  const headerX = pageW / 2 + 10;
+  doc.text("Republic of the Philippines", headerX, y, { align: "center" });
+
+  doc.setFontSize(11);
+  doc.text("Province of Negros Occidental", headerX, y + 6, { align: "center" });
+  doc.text("Municipality of Murcia", headerX, y + 12, { align: "center" });
+  doc.text("Barangay Canlandog", headerX, y + 18, { align: "center" });
+
+  // Title bar
+  y += 30;
+  ensurePageSpace(20);
+
+  setColor("fill", COLORS.primary);
+  doc.roundedRect(M, y, contentW, 12, 2.5, 2.5, "F");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  setColor("text", [255, 255, 255]);
+  doc.text("INFANT VACCINATION RECORD", pageW / 2, y + 8, { align: "center" });
+
+  y += 18;
+
+  // =========================
+  // INFANT DETAILS CARD (FIXED: NO OVERPAINT)
+  // =========================
+  ensurePageSpace(70);
+
+  const lineH = 5.2;
+
+  const cardTopY = y;
+  const leftX = M + 6;
+  const rightX = M + contentW / 2 + 5;
+  const maxLeft = contentW / 2 - 16;
+  const maxRight = contentW / 2 - 16;
+
+  const fullX = leftX;
+  const fullMax = contentW - 20;
+
+  // Pre-split full-width lines for height calc + later render
+  const addressLines = split(address || "-", fullMax - 28);
+  const motherLines = split(`${mother}  |  Contact: ${motherContact}` || "-", fullMax - 28);
+  const fatherLines = split(`${father}  |  Contact: ${fatherContact}` || "-", fullMax - 28);
+
+  const calcKVHeight = (value, maxW) => split(value || "-", maxW).length * lineH;
+
+  const twoColHeight = Math.max(
+    calcKVHeight(name, maxLeft) + calcKVHeight(dob, maxLeft),
+    calcKVHeight(sex, maxRight) + calcKVHeight(age, maxRight)
+  );
+
+  const fullRowsHeight =
+    (addressLines.length * lineH + 1) +
+    (motherLines.length * lineH + 1) +
+    (fatherLines.length * lineH + 1);
+
+  const baseHeader = 16; // header title + divider
+  const paddingBottom = 8;
+
+  const cardH = Math.max(60, baseHeader + twoColHeight + fullRowsHeight + paddingBottom);
+
+  // Draw the card ONCE
+  setColor("fill", COLORS.light);
+  setColor("draw", COLORS.line);
+  doc.roundedRect(M, cardTopY, contentW, cardH, 2.5, 2.5, "FD");
+
+  // Card title
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  setColor("text", COLORS.border);
+  doc.text("INFANT INFORMATION", M + 6, cardTopY + 8);
+
+  // Divider
+  doc.setLineWidth(0.3);
+  setColor("draw", COLORS.line);
+  doc.line(M + 6, cardTopY + 11, M + contentW - 6, cardTopY + 11);
+
+  // Content
+  let iy = cardTopY + 18;
+
+  const kv = (label, value, x, maxW, yPos) => {
+    doc.setFont("helvetica", "bold");
+    setColor("text", COLORS.primary); // label color
+    doc.text(label, x, yPos);
+
+    doc.setFont("helvetica", "normal");
+    setColor("text", COLORS.border); // <<< make value DARK (visible)
+    const lines = split(value || "-", maxW);
+    doc.text(lines, x + 22, yPos);
+    return yPos + lines.length * lineH;
+  };
+
+  // row 1
+  let iyL = cardTopY + 18;
+  let iyR = cardTopY + 18;
+  iyL = kv("Name:", name, leftX, maxLeft, iyL);
+  iyR = kv("Sex:", sex, rightX, maxRight, iyR);
+
+  let baseY = Math.max(iyL, iyR) + 1;
+
+  // row 2
+  iyL = kv("Birthdate:", dob, leftX, maxLeft, baseY);
+  iyR = kv("Age:", age, rightX, maxRight, baseY);
+
+  iy = Math.max(iyL, iyR) + 1;
+
+  const fullLine = (label, linesArr) => {
+    doc.setFont("helvetica", "bold");
+    setColor("text", COLORS.border);
+    doc.text(label, fullX, iy);
+
+    doc.setFont("helvetica", "normal");
+    setColor("text", COLORS.border); // <<< make value DARK (visible)
+    doc.text(linesArr, fullX + 28, iy);
+
+    iy += linesArr.length * lineH + 1;
+  };
+
+  fullLine("Address:", addressLines);
+  fullLine("Mother:", motherLines);
+  fullLine("Father:", fatherLines);
+
+  // move below card
+  y = cardTopY + cardH + 10;
+
+  // =========================
+  // TABLE TITLE
+  // =========================
+  ensurePageSpace(20);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  setColor("text", COLORS.border);
+  doc.text("VACCINATION HISTORY", M, y);
+  y += 6;
+
+  // =========================
+  // TABLE (DYNAMIC HEIGHT + COLORS)
+  // =========================
+  const col = {
+    date: 22,
+    vaccine: 50,
+    dose: 18,
+    midwife: 35,
+    remarks: contentW - (22 + 50 + 18 + 35)
+  };
+
+  const colX = {
+    date: M,
+    vaccine: M + col.date,
+    dose: M + col.date + col.vaccine,
+    midwife: M + col.date + col.vaccine + col.dose,
+    remarks: M + col.date + col.vaccine + col.dose + col.midwife
+  };
+
+  const drawTableHeader = () => {
+    ensurePageSpace(12);
+
+    setColor("fill", COLORS.primary);
+    doc.roundedRect(M, y, contentW, 9, 2, 2, "F");
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    setColor("text", [255, 255, 255]);
+
+    doc.text("Date", colX.date + 2, y + 6);
+    doc.text("Vaccine", colX.vaccine + 2, y + 6);
+    doc.text("Dose", colX.dose + 2, y + 6);
+    doc.text("Midwife", colX.midwife + 2, y + 6);
+    doc.text("Remarks", colX.remarks + 2, y + 6);
+
+    y += 10;
+  };
+
+  const drawRow = (cells, index) => {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    setColor("text", COLORS.border);
+
+    const dateLines = split(cells[0], col.date - 4);
+    const vacLines = split(cells[1], col.vaccine - 4);
+    const doseLines = split(cells[2], col.dose - 4);
+    const midLines = split(cells[3], col.midwife - 4);
+    const remLines = split(cells[4], col.remarks - 4);
+
+    const maxLines = Math.max(
+      dateLines.length, vacLines.length, doseLines.length, midLines.length, remLines.length
+    );
+
+    const rowH = Math.max(8, maxLines * 4.5 + 3);
+
+    // new page with header repeat
+    if (y + rowH > pageH - 20) {
+      doc.addPage();
+      y = 18;
+
+      doc.setLineWidth(0.6);
+      setColor("draw", COLORS.line);
+      doc.roundedRect(M - 2, 10, pageW - (M - 2) * 2, pageH - 18, 3, 3);
+
+      drawTableHeader();
     }
 
-    window.open(`http://localhost:8080/${birthDocumentPath}`, "_blank");
-}
-</script>
-<script>
-function downloadRecord() {
-    window.open(
-        `http://localhost:8080/infant/${currentInfantId}/download`,
-        "_blank"
-    );
+    // zebra fill
+    if (index % 2 === 0) {
+      setColor("fill", [248, 250, 252]);
+      doc.rect(M, y, contentW, rowH, "F");
+    }
+
+    setColor("draw", COLORS.line);
+    doc.setLineWidth(0.2);
+    doc.rect(M, y, contentW, rowH);
+
+    doc.line(colX.vaccine, y, colX.vaccine, y + rowH);
+    doc.line(colX.dose, y, colX.dose, y + rowH);
+    doc.line(colX.midwife, y, colX.midwife, y + rowH);
+    doc.line(colX.remarks, y, colX.remarks, y + rowH);
+
+    const ty = y + 5;
+    doc.text(dateLines, colX.date + 2, ty);
+    doc.text(vacLines, colX.vaccine + 2, ty);
+    doc.text(doseLines, colX.dose + 2, ty);
+    doc.text(midLines, colX.midwife + 2, ty);
+    doc.text(remLines, colX.remarks + 2, ty);
+
+    y += rowH;
+  };
+
+  drawTableHeader();
+
+  const rows = document.querySelectorAll("#vaccinationTableBody tr");
+
+  if (rows.length === 1 && rows[0].innerText.toLowerCase().includes("no records")) {
+    ensurePageSpace(18);
+    setColor("fill", [255, 251, 235]);
+    setColor("draw", [253, 230, 138]);
+    doc.roundedRect(M, y, contentW, 14, 2, 2, "FD");
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    setColor("text", [146, 64, 14]);
+    doc.text("No vaccination records found.", M + 6, y + 9);
+    y += 18;
+  } else {
+    let rowIndex = 0;
+    rows.forEach((row) => {
+      const cols = row.querySelectorAll("td");
+      if (cols.length === 5) {
+        drawRow(
+          [
+            cols[0].innerText,
+            cols[1].innerText,
+            cols[2].innerText,
+            cols[3].innerText,
+            cols[4].innerText
+          ],
+          rowIndex
+        );
+        rowIndex++;
+      }
+    });
+  }
+
+  // =========================
+  // FOOTER
+  // =========================
+  ensurePageSpace(16);
+  y += 10;
+
+  const now = new Date();
+  const generatedOn = now.toLocaleString("en-PH", {
+  year: "numeric",
+  month: "long",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true
+});
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  setColor("text", COLORS.gray);
+  doc.text(
+    "This document is system-generated by Barangay Canlandog Health Center.",
+    pageW / 2,
+    y,
+    { align: "center" }
+  );
+    y += 5;
+    doc.setFontSize(8);
+    doc.text(`Generated On: ${generatedOn}`, pageW / 2, y, { align: "center" });
+  const fileName = (name || "Infant").replace(/\s+/g, "_") + "_Vaccination_Record.pdf";
+  doc.save(fileName);
 }
 </script>
 <script>

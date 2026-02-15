@@ -91,7 +91,7 @@ if ($getResult !== FALSE) {
         <table class="vaccine-table">
             <thead>
                 <tr>
-                    <th>Image</th>
+        
                     <th>Vaccine Name</th>
                     <th>Description</th>
                     <th>Status</th>
@@ -101,13 +101,7 @@ if ($getResult !== FALSE) {
             <tbody>
                 <?php foreach ($vaccineData as $v): ?>
                 <tr>
-                    <td>
-                        <img 
-                            src="../../../uploads/vaccine.png" 
-                            alt="<?= htmlspecialchars($v['vaccine_name']) ?>" 
-                            class="vaccine-avatar"
-                        >
-                    </td>
+
                     <td><?= htmlspecialchars($v['vaccine_name']) ?></td>
                     <td><?= htmlspecialchars($v['description'] ?? 'No description available') ?></td>
                     <td class="<?= $v['status'] == 1 ? 'active' : 'inactive' ?>">

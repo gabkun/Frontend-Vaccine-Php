@@ -1701,3 +1701,131 @@ a {
     .btn-edit:hover { background: #0b5ed7; }
     .btn-delete:hover { background: #bb2d3b; }
     .btn-done:hover { background: #19990d; }
+
+    .booklet-container {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    background: #ffffff;
+    padding: 30px;
+    border: 8px solid #1e7e34; /* Barangay Green */
+    border-radius: 12px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #222;
+}
+
+.booklet-header {
+    text-align: center;
+    border-bottom: 3px solid #1e7e34;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.booklet-header img {
+    width: 90px;
+    margin-bottom: 10px;
+}
+
+.booklet-header h1 {
+    font-size: 20px;
+    margin: 5px 0;
+    font-weight: bold;
+    color: #1e7e34;
+}
+
+.booklet-header h2 {
+    font-size: 16px;
+    margin: 3px 0;
+}
+
+.record-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #000;
+    letter-spacing: 1px;
+}
+
+.infant-info {
+    background: #f3f8f4;
+    padding: 15px;
+    border: 2px solid #1e7e34;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.infant-info p {
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+.section-title {
+    font-weight: bold;
+    font-size: 16px;
+    color: #1e7e34;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #1e7e34;
+    padding-bottom: 5px;
+}
+
+.vaccination-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.vaccination-table th {
+    background-color: #1e7e34;
+    color: white;
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.vaccination-table td {
+    padding: 8px;
+    border: 1px solid #ccc;
+}
+
+.vaccination-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.booklet-footer {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 12px;
+    color: #555;
+    border-top: 2px solid #1e7e34;
+    padding-top: 10px;
+}
+
+.file-upload-row {
+  display: flex;
+  gap: 20px;
+}
+
+.file-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.file-group label {
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #333;
+}
+
+.file-group small {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 6px;
+}
+
+.file-group input[type="file"] {
+  padding: 6px;
+  background: #f8f8f8;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
