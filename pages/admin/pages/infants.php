@@ -973,15 +973,33 @@ async function downloadRecord() {
 <script>
 
 function deleteInfant() {
+    if (!currentInfantId) {
+        alert("No infant selected.");
+        return;
+    }
+
     if (!confirm("Are you sure you want to delete this infant record?")) return;
 
-    fetch(`http://localhost:8080/infant/${currentInfantId}`, {
+    fetch(`http://localhost:8080/infant/delete/${currentInfantId}`, {
         method: "DELETE"
     })
-        .then(res => res.json())
-        .then(() => {
-            alert("Infant record deleted successfully");
-            location.reload();
-        });
+    .then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+            alert(data.message || "Failed to delete infant record.");
+            return;
+        }
+
+        alert(data.message || "Infant record deleted successfully");
+
+        // close modal then reload
+        closeVaccinationModal();
+        location.reload();
+    })
+    .catch((err) => {
+        console.error(err);
+        alert("Error connecting to API.");
+    });
 }
 </script>
