@@ -87,12 +87,12 @@ alert("Error connecting to API");
 <!-- ============================================================
                     FRONTEND HTML
 ============================================================ -->
-<link rel="stylesheet" href="../../../src/admin/admin.css">
+<link rel="stylesheet" href="../../../src/midwife/midwife.css">
 
 <div class="admin-layout">
     <!-- Sidebar -->
     <div class="sidebar-container">
-        <?php include __DIR__ . '/../components/admin_sidebar.php'; ?>
+        <?php include __DIR__ . '/../components/midwife_sidebar.php'; ?>
     </div>
 
     <!-- Main Content -->
