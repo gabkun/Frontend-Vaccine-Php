@@ -155,7 +155,7 @@ function openPurokModal(purokId, purokName) {
               <td>${row.firstname} ${row.lastname}</td>
               <td>${row.sex}</td>
               <td>${row.age_year ?? 0}y ${row.age_month ?? 0}m</td>
-              <td>${row.dob}</td>
+              <td>${formatDate(row.dob)}</td>   
             </tr>
           `;
         });
@@ -176,5 +176,19 @@ function closePurokModal() {
   document.getElementById('purokTableBody').innerHTML =
     `<tr><td colspan="5">No data</td></tr>`;
   document.getElementById('purokViewModal').style.display = 'none';
+}
+
+function formatDate(dateString) {
+  if (!dateString) return '';
+
+  const date = new Date(dateString);
+
+  if (isNaN(date)) return dateString; // fallback if invalid
+
+  return date.toLocaleDateString('en-PH', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 }
 </script>

@@ -2,73 +2,204 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+}
+
+:root {
+  --primary: #1e3a8a;
+  --primary-dark: #173075;
+  --secondary: #f4b400;
+  --secondary-dark: #d89c00;
+  --white: #ffffff;
+  --text: #1f2937;
+  --muted: #cbd5e1;
+  --border-light: rgba(255, 255, 255, 0.12);
+  --shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+  --container: 1200px;
 }
 
 body {
-  background: #f8f9fa;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f8fbff;
 }
 
+/* NAVBAR */
 .navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  padding: 18px 0;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.96), rgba(23, 48, 117, 0.94));
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+
+.navbar-container {
+  width: min(var(--container), calc(100% - 40px));
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #2654B1; 
-  padding: 10px 40px;
-  height: 90px;
+  gap: 20px;
 }
 
 .navbar-left {
   display: flex;
   align-items: center;
-  position: relative;
+  gap: 14px;
+  text-decoration: none;
+  min-width: 0;
 }
 
 .navbar-left img {
-  height: 140px;              
-  margin-right: 12px;
-  position: absolute;       
-  top: -10px;                
-  left: 0;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 6px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
-.navbar-left span {
-  margin-left: 150px;        
-  color: white;
-  font-size: 25px;
-  font-weight: 400;
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-title {
+  color: var(--white);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.brand-subtitle {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 4px;
 }
 
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.navbar-right a {
+.nav-link {
+  position: relative;
   text-decoration: none;
-  color: white;
-  font-weight: 700;
-  transition: 0.3s;
-
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
-.navbar-right a:hover {
-  opacity: 0.8;
+.nav-link:hover {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-link.active {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .btn-login {
-  background-color: #FFD600; 
-  color: black !important;
-  font-weight: 600;
-  padding: 8px 18px;
-  border-radius: 4px;
-  transition: 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  background: linear-gradient(135deg, var(--secondary), #ffcb2f);
+  color: var(--white) !important;
+  font-size: 15px;
+  font-weight: 800;
+  padding: 12px 22px;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(244, 180, 0, 0.25);
+  transition: all 0.3s ease;
+  margin-left: 6px;
 }
 
 .btn-login:hover {
-  background-color: #e6c300;
+  background: linear-gradient(135deg, var(--secondary-dark), #eab308);
+  transform: translateY(-2px);
 }
 
-.btn-login{
-    color: white !important;
+/* OPTIONAL SMALL LINE UNDER ACTIVE/HOVER */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 6px;
+  height: 2px;
+  border-radius: 99px;
+  background: var(--secondary);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform: scaleX(1);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .navbar {
+    padding: 14px 0;
+  }
+
+  .navbar-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .navbar-left {
+    justify-content: center;
+  }
+
+  .navbar-right {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-container {
+    width: calc(100% - 24px);
+  }
+
+  .navbar-left img {
+    width: 54px;
+    height: 54px;
+  }
+
+  .brand-title {
+    font-size: 18px;
+  }
+
+  .brand-subtitle {
+    font-size: 12px;
+  }
+
+  .navbar-right {
+    gap: 8px;
+  }
+
+  .nav-link {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+
+  .btn-login {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 6px;
+  }
 }

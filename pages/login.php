@@ -33,13 +33,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         if (isset($response["token"])) {
 
-            // Save session
             $_SESSION["token"] = $response["token"];
             $_SESSION["user"]  = $response["user"];
 
             $role = $response["user"]["role"];
 
-            // 🔀 ROLE-BASED REDIRECT
             if ($role == 1) {
                 header("Location: /admin");
                 exit;
@@ -58,38 +56,52 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 ?>
 
-
 <script>
-  // 🔒 Prevent going back after logout
   window.history.pushState(null, "", window.location.href);
   window.onpopstate = function () {
     window.history.go(1);
   };
 </script>
 
-<!-- Background -->
-<div class="login-background"></div>
+<div class="login-page">
+  <div class="login-background-overlay"></div>
 
-<!-- Login Box -->
-<div class="login-container">
-  <div class="login-header">
-    <img src="assets/img/logo.png" alt="Barangay Logo" class="logo">
-    <h2>
-      Barangay Canlandog Vaccination<br>
-      System for Infants - Login
-    </h2>
-  </div>
-
-  <form action="login" method="POST">
-    <div class="center-text-button">
-      <input type="text" name="username" placeholder="Username" required>
-      <input type="password" name="password" placeholder="Password" required>
-
-      <p class="register-text">
-        No Account? <a href="/register">Register Here</a>
+  <div class="login-wrapper">
+    <div class="login-left">
+      <div class="login-brand-badge">Barangay Canlandog • Murcia</div>
+      <h1>Welcome Back</h1>
+      <p>
+        Log in to manage infant vaccination schedules, monitor appointments,
+        and access barangay health records securely.
       </p>
-
-      <button type="submit" class="login-btn">Login</button>
     </div>
-  </form>
+
+    <div class="login-container">
+      <div class="login-header">
+        <img src="assets/img/logo.png" alt="Barangay Logo" class="logo">
+        <div class="login-header-text">
+          <h2>Vaccination System</h2>
+          <p>Barangay Canlandog for Infants</p>
+        </div>
+      </div>
+
+      <form action="login" method="POST" class="login-form">
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="Enter your username" required>
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+
+        <div class="login-row">
+
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+    </div>
+  </div>
 </div>
