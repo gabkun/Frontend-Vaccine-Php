@@ -1,23 +1,47 @@
-<!-- components/admin_sidebar.php -->
+<?php
+$current = $_SERVER['REQUEST_URI'];
+?>
+
 <div class="sidebar">
-  <img src="/assets/img/logo.png" alt="Logo">
-  <h2>Midwife Dashboard</h2>
+  <div class="sidebar-top">
+    <div class="sidebar-brand">
+      <img src="/assets/img/logo.png" alt="Logo" class="sidebar-logo">
+      <div class="sidebar-brand-text">
+        <h2>Midwife Dashboard</h2>
+        <p>Barangay Canlandog</p>
+      </div>
+    </div>
+  </div>
 
-  <a href="/midwife" class="nav-btn">
-    <img src="../../../src/img/analytics.png" alt="Analytics" class="nav-icon"> Analytics
-  </a>
+  <div class="sidebar-nav">
+<a href="/midwife" class="nav-btn <?= $current == '/midwife' ? 'active' : '' ?>">
+  <img src="../../../src/img/analytics.png" class="nav-icon">
+  <span>Vaccination Schedule</span>
+</a>
 
-  <a href="/midwife/infants" class="nav-btn">
-    <img src="../../../src/img/infant.png" alt="Infant Database" class="nav-icon"> Infant Database
-  </a>
-  <a href="/midwife/vaccines" class="nav-btn">
-    <img src="../../../src/img/vaccine.png" alt="Vaccine Database" class="nav-icon"> Vaccine Database
-  </a>
-  <a href="/midwife/schedules" class="nav-btn">
-    <img src="../../../src/img/schedule.png" alt="Vaccination Schedules" class="nav-icon"> Vaccination Schedules
-  </a>
+<a href="/midwife/infants" class="nav-btn <?= strpos($current, '/midwife/infants') !== false ? 'active' : '' ?>">
+  <img src="../../../src/img/infant.png" class="nav-icon">
+  <span>Infant Database</span>
+</a>
 
-  <form method="POST" action="/logout">
-    <button type="submit" class="logout-btn">Logout</button>
-  </form>
+<a href="/midwife/vaccines" class="nav-btn <?= strpos($current, '/midwife/vaccines') !== false ? 'active' : '' ?>">
+  <img src="../../../src/img/vaccine.png" class="nav-icon">
+  <span>Vaccine Database</span>
+</a>
+
+
+<a href="/midwife/schedules" class="nav-btn <?= strpos($current, '/midwife/schedules') !== false ? 'active' : '' ?>">
+  <img src="../../../src/img/schedule.png" class="nav-icon">
+  <span>Create Vaccination</span>
+</a>
+
+
+  </div>
+
+  <div class="sidebar-bottom">
+    <form method="POST" action="/logout">
+      <button type="submit" class="logout-btn">Logout</button>
+    </form>
+  </div>
 </div>
+
