@@ -1,28 +1,54 @@
-<!-- components/admin_sidebar.php -->
+<?php
+$current = $_SERVER['REQUEST_URI'];
+?>
+
 <div class="sidebar">
-  <img src="/assets/img/logo.png" alt="Logo">
-  <h2>Admin Dashboard</h2>
+  <div class="sidebar-top">
+    <div class="sidebar-brand">
+      <img src="/assets/img/logo.png" alt="Logo" class="sidebar-logo">
+      <div class="sidebar-brand-text">
+        <h2>Admin Dashboard</h2>
+        <p>Barangay Canlandog</p>
+      </div>
+    </div>
+  </div>
 
-  <a href="/admin" class="nav-btn">
-    <img src="../../../src/img/analytics.png" alt="Analytics" class="nav-icon"> Vaccination Schedule
-  </a>
-  <a href="/admin/infants" class="nav-btn">
-    <img src="../../../src/img/infant.png" alt="Infant Database" class="nav-icon"> Infant Database
-  </a>
-  <a href="/admin/vaccines" class="nav-btn">
-    <img src="../../../src/img/vaccine.png" alt="Vaccine Database" class="nav-icon"> Vaccine Database
-  </a>
-  <a href="/admin/puroks" class="nav-btn">
-    <img src="../../../src/img/purok.png" alt="Purok Database" class="nav-icon"> Purok Database
-  </a>
-  <a href="/admin/schedules" class="nav-btn">
-    <img src="../../../src/img/schedule.png" alt="Vaccination Schedules" class="nav-icon"> Create Vaccination
-  </a>
-  <a href="/admin/midwives" class="nav-btn">
-    <img src="../../../src/img/midwife.png" alt="Midwife Database" class="nav-icon"> Midwife Database
-  </a>
+  <div class="sidebar-nav">
+<a href="/admin" class="nav-btn <?= $current == '/admin' ? 'active' : '' ?>">
+  <img src="../../../src/img/analytics.png" class="nav-icon">
+  <span>Vaccination Schedule</span>
+</a>
 
-  <form method="POST" action="/logout">
-    <button type="submit" class="logout-btn">Logout</button>
-  </form>
+<a href="/admin/infants" class="nav-btn <?= strpos($current, '/admin/infants') !== false ? 'active' : '' ?>">
+  <img src="../../../src/img/infant.png" class="nav-icon">
+  <span>Infant Database</span>
+</a>
+
+<a href="/admin/vaccines" class="nav-btn <?= strpos($current, '/admin/vaccines') !== false ? 'active' : '' ?>">
+  <img src="../../../src/img/vaccine.png" class="nav-icon">
+  <span>Vaccine Database</span>
+</a>
+
+<a href="/admin/puroks" class="nav-btn <?= strpos($current, '/admin/puroks') !== false ? 'active' : '' ?>">
+  <img src="../../../src/img/purok.png" class="nav-icon">
+  <span>Purok Database</span>
+</a>
+
+<a href="/admin/schedules" class="nav-btn <?= strpos($current, '/admin/schedules') !== false ? 'active' : '' ?>">
+  <img src="../../../src/img/schedule.png" class="nav-icon">
+  <span>Create Vaccination</span>
+</a>
+
+<a href="/admin/midwives" class="nav-btn <?= strpos($current, '/admin/midwives') !== false ? 'active' : '' ?>">
+  <img src="../../../src/img/midwife.png" class="nav-icon">
+  <span>Midwife Database</span>
+</a>
+  </div>
+
+  <div class="sidebar-bottom">
+    <form method="POST" action="/logout">
+      <button type="submit" class="logout-btn">Logout</button>
+    </form>
+  </div>
 </div>
+

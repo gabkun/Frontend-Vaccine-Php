@@ -1,6 +1,5 @@
 <?php include __DIR__ . '/auth/auth.php'; ?>
-<!DOCTYPE html>
-<html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Schedule Overview</title>
@@ -8,6 +7,61 @@
   <!-- GLOBAL ADMIN CSS -->
   <link rel="stylesheet" href="../../../src/admin/admin.css">
 
+  <style>
+    .vax-form-group {
+      margin-bottom: 15px;
+    }
+
+    .vax-form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .vax-form-group input,
+    .vax-form-group select,
+    .vax-form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    .vax-form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-save {
+      background: #1e7e34;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-cancel {
+      background: #6c757d;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-save:hover {
+      background: #17692b;
+    }
+
+    .btn-cancel:hover {
+      background: #5a6268;
+    }
+  </style>
 </head>
 
 <body>
@@ -77,6 +131,54 @@
   </div>
 </div>
 
+<!-- ===============================
+     EDIT SCHEDULE MODAL
+================================ -->
+<div id="editVaxModal" class="vax-modal">
+  <div class="vax-modal-content">
+    <span class="vax-modal-close" onclick="closeEditModal()">&times;</span>
+
+    <h2>Edit Vaccination Schedule</h2>
+
+    <form id="editScheduleForm">
+      <input type="hidden" id="editScheduleId">
+
+      <div class="vax-form-group">
+        <label for="editVaccineId">Vaccine ID</label>
+        <input type="number" id="editVaccineId" required>
+      </div>
+
+      <div class="vax-form-group">
+        <label for="editDoseType">Dose Type</label>
+        <select id="editDoseType" required>
+          <option value="">Select Dose Type</option>
+          <option value="BCG">BCG</option>
+          <option value="Hepa B">Hepa B</option>
+          <option value="1st Dose">1st Dose</option>
+          <option value="2nd Dose">2nd Dose</option>
+          <option value="3rd Dose">3rd Dose</option>
+          <option value="Booster">Booster</option>
+        </select>
+      </div>
+
+      <div class="vax-form-group">
+        <label for="editScheduledOn">Scheduled Date</label>
+        <input type="date" id="editScheduledOn" required>
+      </div>
+
+      <div class="vax-form-group">
+        <label for="editRemarks">Remarks</label>
+        <textarea id="editRemarks" rows="3" placeholder="Enter remarks (optional)"></textarea>
+      </div>
+
+      <div class="vax-form-actions">
+        <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+        <button type="submit" class="btn-save">Update Schedule</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 /* ===============================
    VACCINATION CALENDAR SCRIPT
@@ -85,6 +187,7 @@
 const VAX_API_URL = "http://localhost:8080/schedule/vaccination/scheduled/month";
 
 let vaxCurrentDate = new Date();
+let selectedSchedule = null;
 
 const vaxMonthLabel = document.getElementById("vaxCalendarMonth");
 const vaxCalendarGrid = document.getElementById("vaxCalendarGrid");
@@ -167,7 +270,6 @@ async function markAsDone() {
   const scheduleId = document.getElementById("modalScheduleId").value;
   if (!scheduleId) return alert("Schedule ID not found.");
 
-  // Optional: ask for remarks
   const remarks = prompt("Enter remarks (optional):");
 
   try {
@@ -188,19 +290,20 @@ async function markAsDone() {
 
     alert(data.message || "Schedule marked as completed!");
     closeVaxModal();
-    renderVaxCalendar(); // Refresh the calendar to reflect status change
+    renderVaxCalendar();
   } catch (err) {
     console.error(err);
     alert("Error connecting to API.");
   }
 }
 
-
 /* ===============================
    MODAL FUNCTIONS
 ================================ */
 
 function openVaxModal(schedule) {
+  selectedSchedule = schedule;
+
   document.getElementById("modalScheduleId").value = schedule.schedule_id;
 
   document.getElementById("modalInfantName").textContent =
@@ -209,7 +312,7 @@ function openVaxModal(schedule) {
 
   document.getElementById("modalScheduledDate").textContent = schedule.scheduled_on;
   document.getElementById("modalVaccineName").textContent = schedule.vaccine_name;
-  document.getElementById("modalDoseType").textContent = schedule.dose_type_label;
+  document.getElementById("modalDoseType").textContent = schedule.dose_type_label || schedule.dose_type;
   document.getElementById("modalStatus").textContent =
     schedule.status === 1 ? "Scheduled" : "Completed";
 
@@ -224,15 +327,74 @@ function closeVaxModal() {
   document.getElementById("vaxDetailModal").style.display = "none";
 }
 
+function closeEditModal() {
+  document.getElementById("editVaxModal").style.display = "none";
+}
+
 /* ===============================
    ACTION BUTTONS
 ================================ */
 
 function editSchedule() {
-  const scheduleId = document.getElementById("modalScheduleId").value;
-  alert("Edit Schedule ID: " + scheduleId);
-  // 👉 Redirect or open edit modal
+  if (!selectedSchedule) {
+    alert("No schedule selected.");
+    return;
+  }
+
+  document.getElementById("editScheduleId").value = selectedSchedule.schedule_id;
+  document.getElementById("editVaccineId").value = selectedSchedule.vaccine_id || "";
+  document.getElementById("editDoseType").value = selectedSchedule.dose_type || "";
+  document.getElementById("editScheduledOn").value =
+    new Date(selectedSchedule.scheduled_on).toISOString().split("T")[0];
+  document.getElementById("editRemarks").value = selectedSchedule.remarks || "";
+
+  closeVaxModal();
+  document.getElementById("editVaxModal").style.display = "flex";
 }
+
+document.getElementById("editScheduleForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const scheduleId = document.getElementById("editScheduleId").value;
+  const vaccine_id = document.getElementById("editVaccineId").value;
+  const dose_type = document.getElementById("editDoseType").value;
+  const scheduled_on = document.getElementById("editScheduledOn").value;
+  const remarks = document.getElementById("editRemarks").value;
+
+  if (!scheduleId || !vaccine_id || !dose_type || !scheduled_on) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:8080/schedule/schedule/edit/${scheduleId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        vaccine_id,
+        dose_type,
+        scheduled_on,
+        remarks
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message || "Failed to update schedule.");
+      return;
+    }
+
+    alert(data.message || "Schedule updated successfully.");
+    closeEditModal();
+    renderVaxCalendar();
+  } catch (error) {
+    console.error(error);
+    alert("Error connecting to API.");
+  }
+});
 
 function deleteSchedule() {
   const scheduleId = document.getElementById("modalScheduleId").value;
@@ -244,12 +406,14 @@ function deleteSchedule() {
 }
 
 window.onclick = function(e) {
-  const modal = document.getElementById("vaxDetailModal");
-  if (e.target === modal) closeVaxModal();
+  const detailModal = document.getElementById("vaxDetailModal");
+  const editModal = document.getElementById("editVaxModal");
+
+  if (e.target === detailModal) closeVaxModal();
+  if (e.target === editModal) closeEditModal();
 };
 
 renderVaxCalendar();
 </script>
 
 </body>
-</html>

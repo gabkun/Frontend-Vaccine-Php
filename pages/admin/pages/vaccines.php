@@ -87,12 +87,12 @@ alert("Error connecting to API");
 <!-- ============================================================
                     FRONTEND HTML
 ============================================================ -->
-<link rel="stylesheet" href="../../../src/midwife/midwife.css">
+<link rel="stylesheet" href="../../../src/admin/admin.css">
 
 <div class="admin-layout">
     <!-- Sidebar -->
     <div class="sidebar-container">
-        <?php include __DIR__ . '/../components/midwife_sidebar.php'; ?>
+        <?php include __DIR__ . '/../components/admin_sidebar.php'; ?>
     </div>
 
     <!-- Main Content -->
@@ -290,26 +290,47 @@ alert("Error connecting to API");
     });
   });
 
-  function deleteVaccine(vaccineId) {
-  if (!confirm("Are you sure you want to delete this vaccine? This will also delete related schedules.")) return;
+function deleteSchedule() {
+  const scheduleId = document.getElementById("modalScheduleId").value;
 
-  fetch(`http://localhost:8080/vaccine/delete/${vaccineId}`, {
-    method: "DELETE"
+  if (!scheduleId) {
+    alert("Schedule ID not found.");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to cancel this vaccination schedule?")) return;
+
+  // Optional remarks
+  const remarks = prompt("Enter cancellation remarks (optional):");
+
+  fetch(`http://localhost:8080/schedule/schedule/cancel/${scheduleId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      remarks: remarks
+    })
   })
   .then(async (res) => {
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      alert(data.message || "Failed to delete vaccine.");
+      alert(data.message || "Failed to cancel schedule.");
       return;
     }
 
-    alert(data.message || "Vaccine deleted successfully!");
-    location.reload();
+    alert(data.message || "Vaccination schedule cancelled successfully!");
+
+    closeVaxModal();
+
+    // Refresh calendar
+    renderVaxCalendar();
   })
   .catch((err) => {
     console.error(err);
     alert("Error connecting to API.");
   });
 }
+
 </script>
