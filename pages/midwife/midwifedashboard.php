@@ -81,7 +81,7 @@
    VACCINATION CALENDAR SCRIPT
 ================================ */
 
-const VAX_API_URL = "http://localhost:8080/schedule/vaccination/scheduled/month";
+const VAX_API_URL = "https://backend-vaccine.onrender.com/schedule/vaccination/scheduled/month";
 
 let vaxCurrentDate = new Date();
 

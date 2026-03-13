@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_vaccine"])) {
         "status" => $_POST["status"]
     ];
 
-    $url = "http://localhost:8080/vaccine/add";
+    $url = "https://backend-vaccine.onrender.com/vaccine/add";
 
     $options = [
         "http" => [
@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_vaccine"])) {
 ============================================================ */
 $vaccineData = [];
 
-$getUrl = "http://localhost:8080/vaccine/get";
+$getUrl = "https://backend-vaccine.onrender.com/vaccine/get";
 
 $getOptions = [
     "http" => [
@@ -268,7 +268,7 @@ alert("Error connecting to API");
       status: Number(form.querySelector('[name="status"]').value) // send 1/0 as number
     };
 
-    fetch(`http://localhost:8080/vaccine/update/${editingVaccineId}`, {
+    fetch(`https://backend-vaccine.onrender.com/vaccine/update/${editingVaccineId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
@@ -293,7 +293,7 @@ alert("Error connecting to API");
   function deleteVaccine(vaccineId) {
   if (!confirm("Are you sure you want to delete this vaccine? This will also delete related schedules.")) return;
 
-  fetch(`http://localhost:8080/vaccine/delete/${vaccineId}`, {
+  fetch(`https://backend-vaccine.onrender.com/vaccine/delete/${vaccineId}`, {
     method: "DELETE"
   })
   .then(async (res) => {

@@ -13,7 +13,7 @@ if (!isset($_SESSION["token"])) {
 }
 
 $token = $_SESSION["token"];
-$url = "http://localhost:8080/auth/profile";
+$url = "https://backend-vaccine.onrender.com/auth/profile";
 
 $options = [
     "http" => [

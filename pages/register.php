@@ -4,7 +4,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["password"];
 
     // API endpoint (Express backend)
-    $url = "http://localhost:8080/auth/register";
+    $url = "https://backend-vaccine.onrender.com/auth/register";
 
     // Data to send
     $data = array(

@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = trim($_POST["password"]);
 
     // Express API endpoint
-    $url = "http://localhost:8080/auth/login";
+    $url = "https://backend-vaccine.onrender.com/auth/login";
 
     $data = [
         "username" => $username,

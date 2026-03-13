@@ -7,61 +7,8 @@
   <!-- GLOBAL ADMIN CSS -->
   <link rel="stylesheet" href="../../../src/admin/admin.css">
 
-  <style>
-    .vax-form-group {
-      margin-bottom: 15px;
-    }
-
-    .vax-form-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .vax-form-group input,
-    .vax-form-group select,
-    .vax-form-group textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
-      font-size: 14px;
-    }
-
-    .vax-form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .btn-save {
-      background: #1e7e34;
-      color: #fff;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .btn-cancel {
-      background: #6c757d;
-      color: #fff;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .btn-save:hover {
-      background: #17692b;
-    }
-
-    .btn-cancel:hover {
-      background: #5a6268;
-    }
-  </style>
+  <!-- FONT AWESOME ICONS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
 <body>
@@ -75,6 +22,67 @@
     <div class="infant-content">
       <div class="infant-header">
         <h1>Schedule Overview</h1>
+      </div>
+
+      <!-- ===============================
+           SUMMARY DASHBOARD
+      ================================ -->
+      <div class="summary-dashboard">
+        <div class="summary-card infants">
+          <div class="summary-glow"></div>
+          <div class="summary-icon-wrap">
+            <div class="summary-icon">
+              <i class="fa-solid fa-baby"></i>
+            </div>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Total Infants</span>
+            <h2 id="totalInfants">--</h2>
+            <p>Registered infant records</p>
+          </div>
+        </div>
+
+        <div class="summary-card midwives">
+          <div class="summary-glow"></div>
+          <div class="summary-icon-wrap">
+            <div class="summary-icon">
+              <i class="fa-solid fa-user-nurse"></i>
+            </div>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Total Midwives</span>
+            <h2 id="totalMidwives">--</h2>
+            <p>Active assigned midwives</p>
+          </div>
+        </div>
+
+        <div class="summary-card vaccines">
+          <div class="summary-glow"></div>
+          <div class="summary-icon-wrap">
+            <div class="summary-icon">
+              <i class="fa-solid fa-syringe"></i>
+            </div>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Total Vaccines</span>
+            <h2 id="totalVaccines">--</h2>
+            <p>Available vaccine records</p>
+          </div>
+        </div>
+
+        <div class="summary-card success">
+          <div class="summary-glow"></div>
+          <div class="summary-icon-wrap">
+            <div class="summary-icon">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Successful Vaccinations</span>
+            <h2 id="totalSuccessful">--</h2>
+            <p>Completed vaccination schedules</p>
+          </div>
+        </div>
       </div>
 
       <!-- ===============================
@@ -109,7 +117,6 @@
 
     <h2>Vaccination Schedule Details</h2>
 
-    <!-- Hidden schedule id -->
     <input type="hidden" id="modalScheduleId">
 
     <div class="vax-modal-body">
@@ -121,7 +128,6 @@
       <p><strong>Assigned Midwife:</strong> <span id="modalMidwife"></span></p>
     </div>
 
-    <!-- ACTION BUTTONS -->
     <div class="vax-modal-actions">
       <button class="btn-done" onclick="markAsDone()">Mark as Done</button>
       <button class="btn-edit" onclick="editSchedule()">Edit</button>
@@ -181,10 +187,49 @@
 
 <script>
 /* ===============================
+   SUMMARY DATA
+================================ */
+
+async function loadSummary() {
+  try {
+    const [infantsRes, midwivesRes, vaccinesRes, successfulRes] = await Promise.all([
+      fetch("https://backend-vaccine.onrender.com/summary/infants/total"),
+      fetch("https://backend-vaccine.onrender.com/summary/midwives/total"),
+      fetch("https://backend-vaccine.onrender.com/summary/vaccines/total"),
+      fetch("https://backend-vaccine.onrender.com/summary/vaccination/successful/total")
+    ]);
+
+    const infants = await infantsRes.json();
+    const midwives = await midwivesRes.json();
+    const vaccines = await vaccinesRes.json();
+    const successful = await successfulRes.json();
+
+    document.getElementById("totalInfants").textContent =
+      infants.totalInfants ?? 0;
+
+    document.getElementById("totalMidwives").textContent =
+      midwives.totalMidwives ?? 0;
+
+    document.getElementById("totalVaccines").textContent =
+      vaccines.totalVaccines ?? 0;
+
+    document.getElementById("totalSuccessful").textContent =
+      successful.totalSuccessfulVaccinations ?? 0;
+
+  } catch (err) {
+    console.error("Summary error:", err);
+    document.getElementById("totalInfants").textContent = "0";
+    document.getElementById("totalMidwives").textContent = "0";
+    document.getElementById("totalVaccines").textContent = "0";
+    document.getElementById("totalSuccessful").textContent = "0";
+  }
+}
+
+/* ===============================
    VACCINATION CALENDAR SCRIPT
 ================================ */
 
-const VAX_API_URL = "http://localhost:8080/schedule/vaccination/scheduled/month";
+const VAX_API_URL = "https://backend-vaccine.onrender.com/schedule/vaccination/scheduled/month";
 
 let vaxCurrentDate = new Date();
 let selectedSchedule = null;
@@ -273,7 +318,7 @@ async function markAsDone() {
   const remarks = prompt("Enter remarks (optional):");
 
   try {
-    const response = await fetch(`http://localhost:8080/schedule/schedule/complete/${scheduleId}`, {
+    const response = await fetch(`https://backend-vaccine.onrender.com/schedule/schedule/complete/${scheduleId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -291,6 +336,7 @@ async function markAsDone() {
     alert(data.message || "Schedule marked as completed!");
     closeVaxModal();
     renderVaxCalendar();
+    loadSummary();
   } catch (err) {
     console.error(err);
     alert("Error connecting to API.");
@@ -367,7 +413,7 @@ document.getElementById("editScheduleForm").addEventListener("submit", async fun
   }
 
   try {
-    const response = await fetch(`http://localhost:8080/schedule/schedule/edit/${scheduleId}`, {
+    const response = await fetch(`https://backend-vaccine.onrender.com/schedule/schedule/edit/${scheduleId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -413,6 +459,7 @@ window.onclick = function(e) {
   if (e.target === editModal) closeEditModal();
 };
 
+loadSummary();
 renderVaxCalendar();
 </script>
 

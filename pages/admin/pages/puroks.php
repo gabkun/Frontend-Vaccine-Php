@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_purok"])) {
     ];
 
     // API endpoint
-    $url = "http://localhost:8080/purok/add";
+    $url = "https://backend-vaccine.onrender.com/purok/add";
 
     $options = [
         "http" => [
@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_purok"])) {
     <!-- PUROK FOLDERS -->
     <div class="purok-list">
       <?php
-      $apiUrl = "http://localhost:8080/purok/purok";
+      $apiUrl = "https://backend-vaccine.onrender.com/purok/purok";
       $puroks = json_decode(@file_get_contents($apiUrl), true);
 
       if ($puroks):
@@ -137,7 +137,7 @@ function openPurokModal(purokId, purokName) {
 
   document.getElementById('purokViewModal').style.display = 'block';
 
-  fetch(`http://localhost:8080/infant/by-purok/${purokId}`)
+  fetch(`https://backend-vaccine.onrender.com/infant/by-purok/${purokId}`)
     .then(res => res.json())
     .then(data => {
       // ❌ Ignore stale responses

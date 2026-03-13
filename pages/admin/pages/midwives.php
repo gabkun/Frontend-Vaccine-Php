@@ -86,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_midwife"])) {
             "photo" => $photoPath
         ];
 
-        $url = "http://localhost:8080/midwife/create";
+        $url = "https://backend-vaccine.onrender.com/midwife/create";
         $options = [
             "http" => [
                 "header"  => "Content-Type: application/json\r\n",
@@ -156,7 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_midwife"])) {
         $pw = trim($_POST["password"] ?? "");
         if ($pw !== "") $data["password"] = $pw;
 
-        $url = "http://localhost:8080/midwife/update/" . urlencode($id);
+        $url = "https://backend-vaccine.onrender.com/midwife/update/" . urlencode($id);
 
         $options = [
             "http" => [
@@ -191,7 +191,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_midwife"])) {
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_midwife"])) {
 
     $id = $_POST["midwife_id"] ?? "";
-    $url = "http://localhost:8080/midwife/delete/" . urlencode($id);
+    $url = "https://backend-vaccine.onrender.com/midwife/delete/" . urlencode($id);
 
     $options = [
         "http" => [
@@ -234,7 +234,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_midwife"])) {
 
       <div class="midwife-list">
         <?php
-          $apiUrl = "http://localhost:8080/midwife/get";
+          $apiUrl = "https://backend-vaccine.onrender.com/midwife/get";
           $midwives = json_decode(@file_get_contents($apiUrl), true);
 
           if (!empty($midwives)):
