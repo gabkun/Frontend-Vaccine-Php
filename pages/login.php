@@ -2,11 +2,9 @@
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
     $username = trim($_POST["username"]);
     $password = trim($_POST["password"]);
 
-    // Express API endpoint
     $url = "https://backend-vaccine.onrender.com/auth/login";
 
     $data = [
@@ -14,48 +12,47 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         "password" => $password
     ];
 
-    $options = [
-        "http" => [
-            "header"  => "Content-Type: application/json\r\n",
-            "method"  => "POST",
-            "content" => json_encode($data),
-            "ignore_errors" => true
-        ]
-    ];
+    $ch = curl_init($url);
 
-    $context = stream_context_create($options);
-    $result = @file_get_contents($url, false, $context);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Content-Type: application/json"
+    ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 
-    if ($result === FALSE) {
-        echo "<script>alert('Error connecting to server');</script>";
-    } else {
-        $response = json_decode($result, true);
+    $result = curl_exec($ch);
 
-        if (isset($response["token"])) {
+    if (curl_errno($ch)) {
+        die("cURL Error: " . curl_error($ch));
+    }
 
-            $_SESSION["token"] = $response["token"];
-            $_SESSION["user"]  = $response["user"];
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
 
-            $role = $response["user"]["role"];
+    $response = json_decode($result, true);
 
-            if ($role == 1) {
-                header("Location: /admin");
-                exit;
-            } elseif ($role == 2) {
-                header("Location: /midwife");
-                exit;
-            } else {
-                echo "<script>alert('Unauthorized role');</script>";
-            }
+    if ($httpCode === 200 && isset($response["token"])) {
+        $_SESSION["token"] = $response["token"];
+        $_SESSION["user"]  = $response["user"];
 
+        $role = $response["user"]["role"];
+
+        if ($role == 1) {
+            header("Location: /admin");
+            exit;
+        } elseif ($role == 2) {
+            header("Location: /midwife");
+            exit;
         } else {
-            $msg = isset($response["message"]) ? $response["message"] : "Login failed";
-            echo "<script>alert('".$msg."');</script>";
+            echo "<script>alert('Unauthorized role');</script>";
         }
+    } else {
+        $msg = $response["message"] ?? "Login failed";
+        echo "<script>alert('".$msg."');</script>";
     }
 }
 ?>
-
 <script>
   window.history.pushState(null, "", window.location.href);
   window.onpopstate = function () {
