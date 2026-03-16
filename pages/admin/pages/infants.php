@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_infant"])) {
     ];
 
     // Send to backend API
-    $url = "https://backend-vaccine.onrender.com/infant/add";
+    $url = "http://localhost:8080/infant/add";
     $options = [
         "http" => [
             "header"  => "Content-Type: application/json\r\n",
@@ -87,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_infant"])) {
 // =======================
 // Fetch Puroks
 // =======================
-$purokApiUrl = "https://backend-vaccine.onrender.com/purok/purok";
+$purokApiUrl = "http://localhost:8080/purok/purok";
 $purokData = @file_get_contents($purokApiUrl);
 $puroks = $purokData ? json_decode($purokData, true) : [];
 $purokMap = [];
@@ -98,7 +98,7 @@ foreach ($puroks as $p) {
 // =======================
 // Fetch Infants
 // =======================
-$apiUrl = "https://backend-vaccine.onrender.com/infant/get";
+$apiUrl = "http://localhost:8080/infant/get";
 $infantData = @file_get_contents($apiUrl);
 $infants = $infantData ? json_decode($infantData, true) : [];
 
@@ -342,7 +342,7 @@ document.getElementById("infantForm").addEventListener("submit", function (e) {
 
     const formData = new FormData(this);
 
-    fetch(`https://backend-vaccine.onrender.com/infant/update/${editingInfantId}`, {
+    fetch(`http://localhost:8080/infant/update/${editingInfantId}`, {
         method: "PUT",
         body: formData
     })
@@ -418,7 +418,7 @@ function downloadBirthCert(filePath) {
    INFANT INFORMATION
 ====================== */
 function loadInfantInfo(infantId) {
-    fetch(`https://backend-vaccine.onrender.com/infant/infant/profile/${infantId}`)
+    fetch(`http://localhost:8080/infant/infant/profile/${infantId}`)
         .then(res => res.json())
         .then(data => {
             // FULL NAME
@@ -453,7 +453,7 @@ function loadInfantInfo(infantId) {
             // BIRTH DOCUMENT stays dynamic if you want
             const birthDocElem = document.getElementById("birthDocument");
             if (data.birth_document && data.birth_document !== "") {
-                birthDocElem.src = `https://backend-vaccine.onrender.com/${data.birth_document}`;
+                birthDocElem.src = `http://localhost:8080/${data.birth_document}`;
                 birthDocElem.alt = "Birth Document";
             } else {
                 birthDocElem.src = "../../../assets/img/logo.png"; // fallback
@@ -475,7 +475,7 @@ function loadVaccinationRecords(infantId) {
     const tbody = document.getElementById("vaccinationTableBody");
     tbody.innerHTML = `<tr><td colspan="5" class="loading-row">Loading records...</td></tr>`;
 
-    fetch(`https://backend-vaccine.onrender.com/schedule/vaccination/infant/${infantId}`)
+    fetch(`http://localhost:8080/schedule/vaccination/infant/${infantId}`)
         .then(res => res.json())
         .then(data => {
             if (!Array.isArray(data) || data.length === 0) {
@@ -519,7 +519,7 @@ function editInfant() {
     modal.querySelector(".add-submit").textContent = "Update";
 
     // Fetch infant data
-    fetch(`https://backend-vaccine.onrender.com/infant/infant/profile/${editingInfantId}`)
+    fetch(`http://localhost:8080/infant/infant/profile/${editingInfantId}`)
         .then(res => res.json())
         .then(data => {
             // BASIC INFO
@@ -559,7 +559,7 @@ document.querySelector('[name="dob"]').value =
 function deleteInfant() {
     if (!confirm("Are you sure you want to delete this infant record?")) return;
 
-    fetch(`https://backend-vaccine.onrender.com/infant/${currentInfantId}`, { method: "DELETE" })
+    fetch(`http://localhost:8080/infant/${currentInfantId}`, { method: "DELETE" })
         .then(res => res.json())
         .then(() => {
             alert("Infant deleted successfully");
@@ -980,7 +980,7 @@ function deleteInfant() {
 
     if (!confirm("Are you sure you want to delete this infant record?")) return;
 
-    fetch(`https://backend-vaccine.onrender.com/infant/delete/${currentInfantId}`, {
+    fetch(`http://localhost:8080/infant/delete/${currentInfantId}`, {
         method: "DELETE"
     })
     .then(async (res) => {

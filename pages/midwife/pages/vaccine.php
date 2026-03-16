@@ -290,8 +290,58 @@ alert("Error connecting to API");
     });
   });
 
-  function deleteVaccine(vaccineId) {
-  if (!confirm("Are you sure you want to delete this vaccine? This will also delete related schedules.")) return;
+function deleteSchedule() {
+  const scheduleId = document.getElementById("modalScheduleId").value;
+
+  if (!scheduleId) {
+    alert("Schedule ID not found.");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to cancel this vaccination schedule?")) return;
+
+  // Optional remarks
+  const remarks = prompt("Enter cancellation remarks (optional):");
+
+  fetch(`https://backend-vaccine.onrender.com/schedule/schedule/cancel/${scheduleId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      remarks: remarks
+    })
+  })
+  .then(async (res) => {
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      alert(data.message || "Failed to cancel schedule.");
+      return;
+    }
+
+    alert(data.message || "Vaccination schedule cancelled successfully!");
+
+    closeVaxModal();
+
+    // Refresh calendar
+    renderVaxCalendar();
+  })
+  .catch((err) => {
+    console.error(err);
+    alert("Error connecting to API.");
+  });
+}
+function deleteVaccine(vaccineId) {
+
+  if (!vaccineId) {
+    alert("Vaccine ID not found.");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to delete this vaccine? This will also remove related schedules.")) {
+    return;
+  }
 
   fetch(`https://backend-vaccine.onrender.com/vaccine/delete/${vaccineId}`, {
     method: "DELETE"
@@ -305,6 +355,8 @@ alert("Error connecting to API");
     }
 
     alert(data.message || "Vaccine deleted successfully!");
+
+    // reload table
     location.reload();
   })
   .catch((err) => {

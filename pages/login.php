@@ -5,7 +5,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = trim($_POST["username"]);
     $password = trim($_POST["password"]);
 
-    $url = "https://backend-vaccine.onrender.com/auth/login";
+    $url = "http://localhost:8080/auth/login";
 
     $data = [
         "username" => $username,

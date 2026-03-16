@@ -157,12 +157,9 @@
       <div class="vax-form-group">
         <label for="editDoseType">Dose Type</label>
         <select id="editDoseType" required>
-          <option value="">Select Dose Type</option>
-          <option value="BCG">BCG</option>
-          <option value="Hepa B">Hepa B</option>
+          <option value="">-- Select Dose --</option>
           <option value="1st Dose">1st Dose</option>
           <option value="2nd Dose">2nd Dose</option>
-          <option value="3rd Dose">3rd Dose</option>
           <option value="Booster">Booster</option>
         </select>
       </div>
@@ -193,10 +190,10 @@
 async function loadSummary() {
   try {
     const [infantsRes, midwivesRes, vaccinesRes, successfulRes] = await Promise.all([
-      fetch("https://backend-vaccine.onrender.com/summary/infants/total"),
-      fetch("https://backend-vaccine.onrender.com/summary/midwives/total"),
-      fetch("https://backend-vaccine.onrender.com/summary/vaccines/total"),
-      fetch("https://backend-vaccine.onrender.com/summary/vaccination/successful/total")
+      fetch("http://localhost:8080/summary/infants/total"),
+      fetch("http://localhost:8080/summary/midwives/total"),
+      fetch("http://localhost:8080/summary/vaccines/total"),
+      fetch("http://localhost:8080/summary/vaccination/successful/total")
     ]);
 
     const infants = await infantsRes.json();
@@ -204,17 +201,10 @@ async function loadSummary() {
     const vaccines = await vaccinesRes.json();
     const successful = await successfulRes.json();
 
-    document.getElementById("totalInfants").textContent =
-      infants.totalInfants ?? 0;
-
-    document.getElementById("totalMidwives").textContent =
-      midwives.totalMidwives ?? 0;
-
-    document.getElementById("totalVaccines").textContent =
-      vaccines.totalVaccines ?? 0;
-
-    document.getElementById("totalSuccessful").textContent =
-      successful.totalSuccessfulVaccinations ?? 0;
+    document.getElementById("totalInfants").textContent = infants.totalInfants ?? 0;
+    document.getElementById("totalMidwives").textContent = midwives.totalMidwives ?? 0;
+    document.getElementById("totalVaccines").textContent = vaccines.totalVaccines ?? 0;
+    document.getElementById("totalSuccessful").textContent = successful.totalSuccessfulVaccinations ?? 0;
 
   } catch (err) {
     console.error("Summary error:", err);
@@ -229,7 +219,7 @@ async function loadSummary() {
    VACCINATION CALENDAR SCRIPT
 ================================ */
 
-const VAX_API_URL = "https://backend-vaccine.onrender.com/schedule/vaccination/scheduled/month";
+const VAX_API_URL = "http://localhost:8080/schedule/vaccination/scheduled/month";
 
 let vaxCurrentDate = new Date();
 let selectedSchedule = null;
@@ -288,9 +278,10 @@ async function renderVaxCalendar() {
       const fullName = [s.firstname, s.middlename, s.lastname, s.suffix]
         .filter(Boolean).join(" ");
 
+      const safeSchedule = encodeURIComponent(JSON.stringify(s));
+
       itemsHTML += `
-        <div class="vax-schedule-item"
-          onclick='openVaxModal(${JSON.stringify(s)})'>
+        <div class="vax-schedule-item" onclick="openVaxModalFromEncoded('${safeSchedule}')">
           ${fullName}
         </div>
       `;
@@ -311,6 +302,16 @@ async function renderVaxCalendar() {
   }
 }
 
+function openVaxModalFromEncoded(encodedSchedule) {
+  try {
+    const schedule = JSON.parse(decodeURIComponent(encodedSchedule));
+    openVaxModal(schedule);
+  } catch (error) {
+    console.error("Failed to parse schedule data:", error);
+    alert("Failed to open schedule details.");
+  }
+}
+
 async function markAsDone() {
   const scheduleId = document.getElementById("modalScheduleId").value;
   if (!scheduleId) return alert("Schedule ID not found.");
@@ -318,7 +319,7 @@ async function markAsDone() {
   const remarks = prompt("Enter remarks (optional):");
 
   try {
-    const response = await fetch(`https://backend-vaccine.onrender.com/schedule/schedule/complete/${scheduleId}`, {
+    const response = await fetch(`http://localhost:8080/schedule/schedule/complete/${scheduleId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -387,12 +388,24 @@ function editSchedule() {
     return;
   }
 
-  document.getElementById("editScheduleId").value = selectedSchedule.schedule_id;
-  document.getElementById("editVaccineId").value = selectedSchedule.vaccine_id || "";
-  document.getElementById("editDoseType").value = selectedSchedule.dose_type || "";
-  document.getElementById("editScheduledOn").value =
-    new Date(selectedSchedule.scheduled_on).toISOString().split("T")[0];
-  document.getElementById("editRemarks").value = selectedSchedule.remarks || "";
+  const editScheduleId = document.getElementById("editScheduleId");
+  const editVaccineId = document.getElementById("editVaccineId");
+  const editDoseType = document.getElementById("editDoseType");
+  const editScheduledOn = document.getElementById("editScheduledOn");
+  const editRemarks = document.getElementById("editRemarks");
+
+  if (!editScheduleId || !editVaccineId || !editDoseType || !editScheduledOn || !editRemarks) {
+    alert("Edit form fields are missing.");
+    return;
+  }
+
+  editScheduleId.value = selectedSchedule.schedule_id || "";
+  editVaccineId.value = selectedSchedule.vaccine_id || "";
+  editDoseType.value = selectedSchedule.dose_type || "";
+  editScheduledOn.value = selectedSchedule.scheduled_on
+    ? new Date(selectedSchedule.scheduled_on).toISOString().split("T")[0]
+    : "";
+  editRemarks.value = selectedSchedule.remarks || "";
 
   closeVaxModal();
   document.getElementById("editVaxModal").style.display = "flex";
@@ -413,7 +426,7 @@ document.getElementById("editScheduleForm").addEventListener("submit", async fun
   }
 
   try {
-    const response = await fetch(`https://backend-vaccine.onrender.com/schedule/schedule/edit/${scheduleId}`, {
+    const response = await fetch(`http://localhost:8080/schedule/schedule/edit/${scheduleId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -436,6 +449,7 @@ document.getElementById("editScheduleForm").addEventListener("submit", async fun
     alert(data.message || "Schedule updated successfully.");
     closeEditModal();
     renderVaxCalendar();
+    loadSummary();
   } catch (error) {
     console.error(error);
     alert("Error connecting to API.");
@@ -445,10 +459,47 @@ document.getElementById("editScheduleForm").addEventListener("submit", async fun
 function deleteSchedule() {
   const scheduleId = document.getElementById("modalScheduleId").value;
 
-  if (!confirm("Are you sure you want to delete this schedule?")) return;
+  if (!scheduleId) {
+    alert("Schedule ID not found.");
+    return;
+  }
 
-  alert("Delete Schedule ID: " + scheduleId);
-  // 👉 Call DELETE API here
+  if (!confirm("Are you sure you want to cancel this schedule?")) return;
+
+  const remarks = prompt("Enter cancellation remarks (optional):") || "";
+
+  fetch(`http://localhost:8080/schedule/schedule/cancel/${scheduleId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      remarks: remarks
+    })
+  })
+    .then(async (res) => {
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        alert(data.message || "Failed to cancel schedule.");
+        return;
+      }
+
+      alert(data.message || "Vaccination schedule cancelled successfully.");
+      
+      // close modal if needed
+      const modal = document.getElementById("scheduleModal");
+      if (modal) {
+        modal.style.display = "none";
+      }
+
+      // reload page or refresh table
+      location.reload();
+    })
+    .catch((err) => {
+      console.error("Cancel schedule error:", err);
+      alert("Error connecting to API.");
+    });
 }
 
 window.onclick = function(e) {

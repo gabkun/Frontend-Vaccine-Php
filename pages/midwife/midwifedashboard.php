@@ -1,6 +1,5 @@
 <?php include __DIR__ . '/auth/auth.php'; ?>
-<!DOCTYPE html>
-<html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Schedule Overview</title>
@@ -8,6 +7,8 @@
   <!-- GLOBAL ADMIN CSS -->
   <link rel="stylesheet" href="../../../src/midwife/midwife.css">
 
+  <!-- FONT AWESOME ICONS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
 <body>
@@ -21,6 +22,67 @@
     <div class="infant-content">
       <div class="infant-header">
         <h1>Schedule Overview</h1>
+      </div>
+
+      <!-- ===============================
+           SUMMARY DASHBOARD
+      ================================ -->
+      <div class="summary-dashboard">
+        <div class="summary-card infants">
+          <div class="summary-glow"></div>
+          <div class="summary-icon-wrap">
+            <div class="summary-icon">
+              <i class="fa-solid fa-baby"></i>
+            </div>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Total Infants</span>
+            <h2 id="totalInfants">--</h2>
+            <p>Registered infant records</p>
+          </div>
+        </div>
+
+        <div class="summary-card midwives">
+          <div class="summary-glow"></div>
+          <div class="summary-icon-wrap">
+            <div class="summary-icon">
+              <i class="fa-solid fa-user-nurse"></i>
+            </div>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Total Midwives</span>
+            <h2 id="totalMidwives">--</h2>
+            <p>Active assigned midwives</p>
+          </div>
+        </div>
+
+        <div class="summary-card vaccines">
+          <div class="summary-glow"></div>
+          <div class="summary-icon-wrap">
+            <div class="summary-icon">
+              <i class="fa-solid fa-syringe"></i>
+            </div>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Total Vaccines</span>
+            <h2 id="totalVaccines">--</h2>
+            <p>Available vaccine records</p>
+          </div>
+        </div>
+
+        <div class="summary-card success">
+          <div class="summary-glow"></div>
+          <div class="summary-icon-wrap">
+            <div class="summary-icon">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Successful Vaccinations</span>
+            <h2 id="totalSuccessful">--</h2>
+            <p>Completed vaccination schedules</p>
+          </div>
+        </div>
       </div>
 
       <!-- ===============================
@@ -55,7 +117,6 @@
 
     <h2>Vaccination Schedule Details</h2>
 
-    <!-- Hidden schedule id -->
     <input type="hidden" id="modalScheduleId">
 
     <div class="vax-modal-body">
@@ -67,8 +128,8 @@
       <p><strong>Assigned Midwife:</strong> <span id="modalMidwife"></span></p>
     </div>
 
-    <!-- ACTION BUTTONS -->
     <div class="vax-modal-actions">
+      <button class="btn-done" onclick="markAsDone()">Mark as Done</button>
       <button class="btn-edit" onclick="editSchedule()">Edit</button>
       <button class="btn-delete" onclick="deleteSchedule()">Delete</button>
     </div>
@@ -76,14 +137,92 @@
   </div>
 </div>
 
+<!-- ===============================
+     EDIT SCHEDULE MODAL
+================================ -->
+<div id="editVaxModal" class="vax-modal">
+  <div class="vax-modal-content">
+    <span class="vax-modal-close" onclick="closeEditModal()">&times;</span>
+
+    <h2>Edit Vaccination Schedule</h2>
+
+    <form id="editScheduleForm">
+      <input type="hidden" id="editScheduleId">
+
+      <div class="vax-form-group">
+        <label for="editVaccineId">Vaccine ID</label>
+        <input type="number" id="editVaccineId" required>
+      </div>
+
+      <div class="vax-form-group">
+        <label for="editDoseType">Dose Type</label>
+      <select name="dose_type" id="dose_type" required>
+          <option value="">-- Select Dose --</option>
+          <option value="1">1st Dose</option>
+          <option value="2">2nd Dose</option>
+          <option value="3">Booster</option>
+      </select>
+      </div>
+
+      <div class="vax-form-group">
+        <label for="editScheduledOn">Scheduled Date</label>
+        <input type="date" id="editScheduledOn" required>
+      </div>
+
+      <div class="vax-form-group">
+        <label for="editRemarks">Remarks</label>
+        <textarea id="editRemarks" rows="3" placeholder="Enter remarks (optional)"></textarea>
+      </div>
+
+      <div class="vax-form-actions">
+        <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+        <button type="submit" class="btn-save">Update Schedule</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
+/* ===============================
+   SUMMARY DATA
+================================ */
+
+async function loadSummary() {
+  try {
+    const [infantsRes, midwivesRes, vaccinesRes, successfulRes] = await Promise.all([
+      fetch("http://localhost:8080/summary/infants/total"),
+      fetch("http://localhost:8080/summary/midwives/total"),
+      fetch("http://localhost:8080/summary/vaccines/total"),
+      fetch("http://localhost:8080/summary/vaccination/successful/total")
+    ]);
+
+    const infants = await infantsRes.json();
+    const midwives = await midwivesRes.json();
+    const vaccines = await vaccinesRes.json();
+    const successful = await successfulRes.json();
+
+    document.getElementById("totalInfants").textContent = infants.totalInfants ?? 0;
+    document.getElementById("totalMidwives").textContent = midwives.totalMidwives ?? 0;
+    document.getElementById("totalVaccines").textContent = vaccines.totalVaccines ?? 0;
+    document.getElementById("totalSuccessful").textContent = successful.totalSuccessfulVaccinations ?? 0;
+
+  } catch (err) {
+    console.error("Summary error:", err);
+    document.getElementById("totalInfants").textContent = "0";
+    document.getElementById("totalMidwives").textContent = "0";
+    document.getElementById("totalVaccines").textContent = "0";
+    document.getElementById("totalSuccessful").textContent = "0";
+  }
+}
+
 /* ===============================
    VACCINATION CALENDAR SCRIPT
 ================================ */
 
-const VAX_API_URL = "https://backend-vaccine.onrender.com/schedule/vaccination/scheduled/month";
+const VAX_API_URL = "http://localhost:8080/schedule/vaccination/scheduled/month";
 
 let vaxCurrentDate = new Date();
+let selectedSchedule = null;
 
 const vaxMonthLabel = document.getElementById("vaxCalendarMonth");
 const vaxCalendarGrid = document.getElementById("vaxCalendarGrid");
@@ -139,9 +278,10 @@ async function renderVaxCalendar() {
       const fullName = [s.firstname, s.middlename, s.lastname, s.suffix]
         .filter(Boolean).join(" ");
 
+      const safeSchedule = encodeURIComponent(JSON.stringify(s));
+
       itemsHTML += `
-        <div class="vax-schedule-item"
-          onclick='openVaxModal(${JSON.stringify(s)})'>
+        <div class="vax-schedule-item" onclick="openVaxModalFromEncoded('${safeSchedule}')">
           ${fullName}
         </div>
       `;
@@ -162,11 +302,55 @@ async function renderVaxCalendar() {
   }
 }
 
+function openVaxModalFromEncoded(encodedSchedule) {
+  try {
+    const schedule = JSON.parse(decodeURIComponent(encodedSchedule));
+    openVaxModal(schedule);
+  } catch (error) {
+    console.error("Failed to parse schedule data:", error);
+    alert("Failed to open schedule details.");
+  }
+}
+
+async function markAsDone() {
+  const scheduleId = document.getElementById("modalScheduleId").value;
+  if (!scheduleId) return alert("Schedule ID not found.");
+
+  const remarks = prompt("Enter remarks (optional):");
+
+  try {
+    const response = await fetch(`http://localhost:8080/schedule/schedule/complete/${scheduleId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ remarks })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message || "Failed to mark as done.");
+      return;
+    }
+
+    alert(data.message || "Schedule marked as completed!");
+    closeVaxModal();
+    renderVaxCalendar();
+    loadSummary();
+  } catch (err) {
+    console.error(err);
+    alert("Error connecting to API.");
+  }
+}
+
 /* ===============================
    MODAL FUNCTIONS
 ================================ */
 
 function openVaxModal(schedule) {
+  selectedSchedule = schedule;
+
   document.getElementById("modalScheduleId").value = schedule.schedule_id;
 
   document.getElementById("modalInfantName").textContent =
@@ -175,7 +359,7 @@ function openVaxModal(schedule) {
 
   document.getElementById("modalScheduledDate").textContent = schedule.scheduled_on;
   document.getElementById("modalVaccineName").textContent = schedule.vaccine_name;
-  document.getElementById("modalDoseType").textContent = schedule.dose_type_label;
+  document.getElementById("modalDoseType").textContent = schedule.dose_type_label || schedule.dose_type;
   document.getElementById("modalStatus").textContent =
     schedule.status === 1 ? "Scheduled" : "Completed";
 
@@ -190,15 +374,87 @@ function closeVaxModal() {
   document.getElementById("vaxDetailModal").style.display = "none";
 }
 
+function closeEditModal() {
+  document.getElementById("editVaxModal").style.display = "none";
+}
+
 /* ===============================
    ACTION BUTTONS
 ================================ */
 
 function editSchedule() {
-  const scheduleId = document.getElementById("modalScheduleId").value;
-  alert("Edit Schedule ID: " + scheduleId);
-  // 👉 Redirect or open edit modal
+  if (!selectedSchedule) {
+    alert("No schedule selected.");
+    return;
+  }
+
+  const editScheduleId = document.getElementById("editScheduleId");
+  const editVaccineId = document.getElementById("editVaccineId");
+  const editDoseType = document.getElementById("editDoseType");
+  const editScheduledOn = document.getElementById("editScheduledOn");
+  const editRemarks = document.getElementById("editRemarks");
+
+  if (!editScheduleId || !editVaccineId || !editDoseType || !editScheduledOn || !editRemarks) {
+    alert("Edit form fields are missing.");
+    return;
+  }
+
+  editScheduleId.value = selectedSchedule.schedule_id || "";
+  editVaccineId.value = selectedSchedule.vaccine_id || "";
+  editDoseType.value = selectedSchedule.dose_type || "";
+  editScheduledOn.value = selectedSchedule.scheduled_on
+    ? new Date(selectedSchedule.scheduled_on).toISOString().split("T")[0]
+    : "";
+  editRemarks.value = selectedSchedule.remarks || "";
+
+  closeVaxModal();
+  document.getElementById("editVaxModal").style.display = "flex";
 }
+
+document.getElementById("editScheduleForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const scheduleId = document.getElementById("editScheduleId").value;
+  const vaccine_id = document.getElementById("editVaccineId").value;
+  const dose_type = document.getElementById("editDoseType").value;
+  const scheduled_on = document.getElementById("editScheduledOn").value;
+  const remarks = document.getElementById("editRemarks").value;
+
+  if (!scheduleId || !vaccine_id || !dose_type || !scheduled_on) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:8080/schedule/schedule/edit/${scheduleId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        vaccine_id,
+        dose_type,
+        scheduled_on,
+        remarks
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message || "Failed to update schedule.");
+      return;
+    }
+
+    alert(data.message || "Schedule updated successfully.");
+    closeEditModal();
+    renderVaxCalendar();
+    loadSummary();
+  } catch (error) {
+    console.error(error);
+    alert("Error connecting to API.");
+  }
+});
 
 function deleteSchedule() {
   const scheduleId = document.getElementById("modalScheduleId").value;
@@ -210,12 +466,15 @@ function deleteSchedule() {
 }
 
 window.onclick = function(e) {
-  const modal = document.getElementById("vaxDetailModal");
-  if (e.target === modal) closeVaxModal();
+  const detailModal = document.getElementById("vaxDetailModal");
+  const editModal = document.getElementById("editVaxModal");
+
+  if (e.target === detailModal) closeVaxModal();
+  if (e.target === editModal) closeEditModal();
 };
 
+loadSummary();
 renderVaxCalendar();
 </script>
 
 </body>
-</html>

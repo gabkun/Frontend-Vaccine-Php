@@ -13,7 +13,7 @@
         </p>
 
         <div class="hero-actions">
-          <a href="#" class="btn btn-primary">Register Now</a>
+          <a href="/login" class="btn btn-primary">Login Now</a>
           <a href="#" class="btn btn-secondary">Learn More</a>
         </div>
       </div>

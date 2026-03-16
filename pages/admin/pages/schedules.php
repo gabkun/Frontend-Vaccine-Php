@@ -3,7 +3,7 @@ include __DIR__ . '/../auth/auth.php';
 
 // ===== FETCH INFANTS =====
 $infants = [];
-$infant_api = "https://backend-vaccine.onrender.com/infant/get";
+$infant_api = "http://localhost:8080/infant/get";
 $infant_response = @file_get_contents($infant_api);
 if ($infant_response !== FALSE) {
     $infant_data = json_decode($infant_response, true);
@@ -19,7 +19,7 @@ if ($infant_response !== FALSE) {
 
 // ===== FETCH VACCINES =====
 $vaccines = [];
-$vaccine_api = "https://backend-vaccine.onrender.com/vaccine/get";
+$vaccine_api = "http://localhost:8080/vaccine/get";
 $vaccine_response = @file_get_contents($vaccine_api);
 if ($vaccine_response !== FALSE) {
     $vaccine_data = json_decode($vaccine_response, true);
@@ -37,7 +37,7 @@ if ($vaccine_response !== FALSE) {
 
 // ===== FETCH MIDWIVES =====
 $midwives = [];
-$midwife_api = "https://backend-vaccine.onrender.com/midwife/get";
+$midwife_api = "http://localhost:8080/midwife/get";
 $midwife_response = @file_get_contents($midwife_api);
 if ($midwife_response !== FALSE) {
     $midwife_data = json_decode($midwife_response, true);
@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_vaccination"])
         "completed_at" => !empty($_POST["completed_at"]) ? $_POST["completed_at"] : null
     ];
 
-    $url = "https://backend-vaccine.onrender.com/schedule/add";
+    $url = "http://localhost:8080/schedule/add";
     $options = [
         "http" => [
             "header"  => "Content-Type: application/json\r\n",
@@ -152,12 +152,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_vaccination"])
                     <!-- Dose Type -->
                     <div class="schedule-form-group">
                         <label for="dose_type">Dose Type</label>
-                        <select name="dose_type" id="dose_type" required>
-                            <option value="">-- Select Dose --</option>
-                            <option value="1st Dose">1st Dose</option>
-                            <option value="2nd Dose">2nd Dose</option>
-                            <option value="Booster">Booster</option>
-                        </select>
+                      <select name="dose_type" id="dose_type" required>
+                          <option value="">-- Select Dose --</option>
+                          <option value="1">1st Dose</option>
+                          <option value="2">2nd Dose</option>
+                          <option value="3">Booster</option>
+                      </select>
                     </div>
 
                     <!-- Scheduled Date -->
