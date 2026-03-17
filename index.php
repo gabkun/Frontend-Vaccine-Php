@@ -28,6 +28,12 @@ function loadPage($request)
         case '/home':
             require __DIR__ . '/pages/home.php';
             break;
+        case '/about':
+            require __DIR__ . '/pages/about.php';
+            break;
+        case '/contact':
+            require __DIR__ . '/pages/contact.php';
+            break;
 
         case '/about':
             require __DIR__ . '/pages/about.php';

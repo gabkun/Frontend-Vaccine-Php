@@ -14,7 +14,7 @@
 
         <div class="hero-actions">
           <a href="/login" class="btn btn-primary">Login Now</a>
-          <a href="#" class="btn btn-secondary">Learn More</a>
+          <a href="/contact" class="btn btn-secondary">Learn More</a>
         </div>
       </div>
 
@@ -76,7 +76,7 @@
           This website was created to guide parents and guardians in accessing timely,
           reliable, and organized vaccination services.
         </p>
-        <a href="#" class="btn btn-primary">Read More</a>
+        <a href="/about" class="btn btn-primary">Read More</a>
       </div>
     </div>
   </section>

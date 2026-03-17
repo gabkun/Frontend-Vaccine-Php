@@ -206,21 +206,26 @@ $staticAvatar = "uploads/baby-avatar.png"; // default relative path
             </div>
 
             <div class="modal-row">
-                <select name="purok_id" required>
-                    <option value="" disabled selected>Select Purok</option>
-                    <option value="1">Purok Monarch</option>
-                    <option value="2">Purok Mainswagon</option>
-                    <option value="3">Purok Maliayon</option>
-                    <option value="4">Purok Benedicto</option>
-                    <option value="5">Purok Tunay</option>
-                    <option value="6">Purok Paho</option>
-                    <option value="7">Purok Halandumon</option>
-                    <option value="8">Purok Mary</option>
-                    <option value="9">Purok Hda. Paz</option>
-                    <option value="10">Purok Nato</option>
-                    <option value="11">Purok Lopues</option>
-                    <option value="12">Purok Antawan</option>
-                </select>
+            <select name="purok_id" required>
+            <option value="" disabled selected>Select Purok</option>
+
+            <?php
+            $apiUrl = "http://localhost:8080/purok/purok";
+            $puroks = json_decode(@file_get_contents($apiUrl), true);
+
+            if ($puroks && is_array($puroks)) {
+                foreach ($puroks as $purok) {
+
+                // ✅ ONLY ACTIVE PUROK
+                if ((int)$purok['purok_status'] === 1) {
+                    echo '<option value="'. (int)$purok['id'] .'">'
+                        . htmlspecialchars($purok['purok_name']) .
+                        '</option>';
+                }
+                }
+            }
+            ?>
+            </select>
 
                 <input type="text" name="home_add" placeholder="Home Address">
             </div>
