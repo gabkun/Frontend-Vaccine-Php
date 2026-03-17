@@ -341,9 +341,9 @@ const openInfantBtn = document.getElementById("openInfantModal");
 const closeInfantBtn = document.getElementById("closeInfantModal");
 
 document.getElementById("infantForm").addEventListener("submit", function (e) {
-    if (formMode !== "edit") return; // let PHP handle CREATE
+    if (formMode !== "edit") return; // CREATE stays normal PHP submit
 
-    e.preventDefault(); // stop normal POST
+    e.preventDefault();
 
     const formData = new FormData(this);
 
@@ -351,15 +351,21 @@ document.getElementById("infantForm").addEventListener("submit", function (e) {
         method: "PUT",
         body: formData
     })
-        .then(res => res.json())
-        .then(response => {
-            alert(response.message || "Infant updated successfully");
-            location.reload();
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Failed to update infant");
-        });
+    .then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+            alert(data.message || data.error?.sqlMessage || "Failed to update infant");
+            return;
+        }
+
+        alert(data.message || "Infant updated successfully");
+        location.reload();
+    })
+    .catch((err) => {
+        console.error(err);
+        alert("Failed to update infant");
+    });
 });
 
 openInfantBtn.addEventListener("click", () => infantModal.style.display = "flex");
@@ -458,7 +464,7 @@ function loadInfantInfo(infantId) {
             // BIRTH DOCUMENT stays dynamic if you want
             const birthDocElem = document.getElementById("birthDocument");
             if (data.birth_document && data.birth_document !== "") {
-                birthDocElem.src = `http://localhost:8080/${data.birth_document}`;
+                birthDocElem.src = data.birth_document;
                 birthDocElem.alt = "Birth Document";
             } else {
                 birthDocElem.src = "../../../assets/img/logo.png"; // fallback
@@ -515,45 +521,46 @@ function editInfant() {
     formMode = "edit";
     editingInfantId = currentInfantId;
 
-    // Open modal
     const modal = document.getElementById("addInfantModal");
     modal.style.display = "flex";
 
-    // Change modal title & button
+    // change title and button
     modal.querySelector("h2").textContent = "Edit Infant Record";
     modal.querySelector(".add-submit").textContent = "Update";
+    modal.querySelector(".add-submit").removeAttribute("name");
 
-    // Fetch infant data
     fetch(`http://localhost:8080/infant/infant/profile/${editingInfantId}`)
         .then(res => res.json())
         .then(data => {
-            // BASIC INFO
             document.querySelector('[name="firstname"]').value = data.firstname ?? "";
             document.querySelector('[name="middlename"]').value = data.middlename ?? "";
             document.querySelector('[name="lastname"]').value = data.lastname ?? "";
             document.querySelector('[name="suffix"]').value = data.suffix ?? "";
             document.querySelector('[name="sex"]').value = data.sex ?? "";
-document.querySelector('[name="dob"]').value =
-    data.dob ? data.dob.split("T")[0] : "";
+            document.querySelector('[name="dob"]').value = data.dob ? data.dob.split("T")[0] : "";
             document.querySelector('[name="age_year"]').value = data.age_year ?? "";
             document.querySelector('[name="age_month"]').value = data.age_month ?? "";
             document.querySelector('[name="purok_id"]').value = data.purok_id ?? "";
             document.querySelector('[name="home_add"]').value = data.home_add ?? "";
 
-            // FATHER
             document.querySelector('[name="f_firstname"]').value = data.f_firstname ?? "";
             document.querySelector('[name="f_middlename"]').value = data.f_middlename ?? "";
             document.querySelector('[name="f_lastname"]').value = data.f_lastname ?? "";
             document.querySelector('[name="f_contact"]').value = data.f_contact ?? "";
 
-            // MOTHER
             document.querySelector('[name="m_firstname"]').value = data.m_firstname ?? "";
             document.querySelector('[name="m_middlename"]').value = data.m_middlename ?? "";
             document.querySelector('[name="m_lastname"]').value = data.m_lastname ?? "";
             document.querySelector('[name="m_contact"]').value = data.m_contact ?? "";
 
-            // Store ID
             document.getElementById("infant_id").value = editingInfantId;
+
+            // very important: clear file inputs so user can optionally upload new files
+            const birthInput = document.querySelector('[name="birth_document"]');
+            const profileInput = document.querySelector('[name="profile_pic"]');
+
+            if (birthInput) birthInput.value = "";
+            if (profileInput) profileInput.value = "";
         })
         .catch(err => {
             console.error(err);
