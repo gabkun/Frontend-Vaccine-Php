@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_infant"])) {
     ];
 
     // Send to backend API
-    $url = "http://localhost:8080/infant/add";
+    $url = "http://localhost:8000/infant/add";
     $options = [
         "http" => [
             "header"  => "Content-Type: application/json\r\n",
@@ -87,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_infant"])) {
 // =======================
 // Fetch Puroks
 // =======================
-$purokApiUrl = "http://localhost:8080/purok/purok";
+$purokApiUrl = "http://localhost:8000/purok/purok";
 $purokData = @file_get_contents($purokApiUrl);
 $puroks = $purokData ? json_decode($purokData, true) : [];
 $purokMap = [];
@@ -98,14 +98,14 @@ foreach ($puroks as $p) {
 // =======================
 // Fetch Infants
 // =======================
-$apiUrl = "http://localhost:8080/infant/get";
+$apiUrl = "http://localhost:8000/infant/get";
 $infantData = @file_get_contents($apiUrl);
 $infants = $infantData ? json_decode($infantData, true) : [];
 
 $staticAvatar = "uploads/baby-avatar.png"; // default relative path
 ?>
 
-<link rel="stylesheet" href="../../../src/admin/admin.css">
+<link rel="stylesheet" href="../../../src/midwife/midwife.css">
 
 <div class="admin-layout">
     <div class="sidebar-container">
@@ -206,21 +206,26 @@ $staticAvatar = "uploads/baby-avatar.png"; // default relative path
             </div>
 
             <div class="modal-row">
-                <select name="purok_id" required>
-                    <option value="" disabled selected>Select Purok</option>
-                    <option value="1">Purok Monarch</option>
-                    <option value="2">Purok Mainswagon</option>
-                    <option value="3">Purok Maliayon</option>
-                    <option value="4">Purok Benedicto</option>
-                    <option value="5">Purok Tunay</option>
-                    <option value="6">Purok Paho</option>
-                    <option value="7">Purok Halandumon</option>
-                    <option value="8">Purok Mary</option>
-                    <option value="9">Purok Hda. Paz</option>
-                    <option value="10">Purok Nato</option>
-                    <option value="11">Purok Lopues</option>
-                    <option value="12">Purok Antawan</option>
-                </select>
+            <select name="purok_id" required>
+            <option value="" disabled selected>Select Purok</option>
+
+            <?php
+            $apiUrl = "http://localhost:8000/purok/purok";
+            $puroks = json_decode(@file_get_contents($apiUrl), true);
+
+            if ($puroks && is_array($puroks)) {
+                foreach ($puroks as $purok) {
+
+                // ✅ ONLY ACTIVE PUROK
+                if ((int)$purok['purok_status'] === 1) {
+                    echo '<option value="'. (int)$purok['id'] .'">'
+                        . htmlspecialchars($purok['purok_name']) .
+                        '</option>';
+                }
+                }
+            }
+            ?>
+            </select>
 
                 <input type="text" name="home_add" placeholder="Home Address">
             </div>
@@ -231,7 +236,14 @@ $staticAvatar = "uploads/baby-avatar.png"; // default relative path
                 <input type="text" name="f_firstname" placeholder="Father First Name">
                 <input type="text" name="f_middlename" placeholder="Father Middle Name">
                 <input type="text" name="f_lastname" placeholder="Father Last Name">
-                <input type="text" name="f_contact" placeholder="Father Contact Number">
+                <input 
+                type="text" 
+                name="f_contact" 
+                placeholder="Father Contact Number"
+                inputmode="numeric" 
+                pattern="[0-9]*"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                >
             </div>
 
             <!-- Mother Info -->
@@ -240,7 +252,14 @@ $staticAvatar = "uploads/baby-avatar.png"; // default relative path
                 <input type="text" name="m_firstname" placeholder="Mother First Name">
                 <input type="text" name="m_middlename" placeholder="Mother Middle Name">
                 <input type="text" name="m_lastname" placeholder="Mother Last Name">
-                <input type="text" name="m_contact" placeholder="Mother Contact Number">
+                <input 
+                type="text" 
+                name="m_contact" 
+                placeholder="Mother Contact Number"
+                inputmode="numeric" 
+                pattern="[0-9]*"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                >
             </div>
 
             <!-- Uploads -->
@@ -336,25 +355,31 @@ const openInfantBtn = document.getElementById("openInfantModal");
 const closeInfantBtn = document.getElementById("closeInfantModal");
 
 document.getElementById("infantForm").addEventListener("submit", function (e) {
-    if (formMode !== "edit") return; // let PHP handle CREATE
+    if (formMode !== "edit") return; // CREATE stays normal PHP submit
 
-    e.preventDefault(); // stop normal POST
+    e.preventDefault();
 
     const formData = new FormData(this);
 
-    fetch(`http://localhost:8080/infant/update/${editingInfantId}`, {
+    fetch(`http://localhost:8000/infant/update/${editingInfantId}`, {
         method: "PUT",
         body: formData
     })
-        .then(res => res.json())
-        .then(response => {
-            alert(response.message || "Infant updated successfully");
-            location.reload();
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Failed to update infant");
-        });
+    .then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+            alert(data.message || data.error?.sqlMessage || "Failed to update infant");
+            return;
+        }
+
+        alert(data.message || "Infant updated successfully");
+        location.reload();
+    })
+    .catch((err) => {
+        console.error(err);
+        alert("Failed to update infant");
+    });
 });
 
 openInfantBtn.addEventListener("click", () => infantModal.style.display = "flex");
@@ -418,7 +443,7 @@ function downloadBirthCert(filePath) {
    INFANT INFORMATION
 ====================== */
 function loadInfantInfo(infantId) {
-    fetch(`http://localhost:8080/infant/infant/profile/${infantId}`)
+    fetch(`http://localhost:8000/infant/infant/profile/${infantId}`)
         .then(res => res.json())
         .then(data => {
             // FULL NAME
@@ -453,7 +478,7 @@ function loadInfantInfo(infantId) {
             // BIRTH DOCUMENT stays dynamic if you want
             const birthDocElem = document.getElementById("birthDocument");
             if (data.birth_document && data.birth_document !== "") {
-                birthDocElem.src = `http://localhost:8080/${data.birth_document}`;
+                birthDocElem.src = data.birth_document;
                 birthDocElem.alt = "Birth Document";
             } else {
                 birthDocElem.src = "../../../assets/img/logo.png"; // fallback
@@ -475,7 +500,7 @@ function loadVaccinationRecords(infantId) {
     const tbody = document.getElementById("vaccinationTableBody");
     tbody.innerHTML = `<tr><td colspan="5" class="loading-row">Loading records...</td></tr>`;
 
-    fetch(`http://localhost:8080/schedule/vaccination/infant/${infantId}`)
+    fetch(`http://localhost:8000/schedule/vaccination/infant/${infantId}`)
         .then(res => res.json())
         .then(data => {
             if (!Array.isArray(data) || data.length === 0) {
@@ -510,45 +535,46 @@ function editInfant() {
     formMode = "edit";
     editingInfantId = currentInfantId;
 
-    // Open modal
     const modal = document.getElementById("addInfantModal");
     modal.style.display = "flex";
 
-    // Change modal title & button
+    // change title and button
     modal.querySelector("h2").textContent = "Edit Infant Record";
     modal.querySelector(".add-submit").textContent = "Update";
+    modal.querySelector(".add-submit").removeAttribute("name");
 
-    // Fetch infant data
-    fetch(`http://localhost:8080/infant/infant/profile/${editingInfantId}`)
+    fetch(`http://localhost:8000/infant/infant/profile/${editingInfantId}`)
         .then(res => res.json())
         .then(data => {
-            // BASIC INFO
             document.querySelector('[name="firstname"]').value = data.firstname ?? "";
             document.querySelector('[name="middlename"]').value = data.middlename ?? "";
             document.querySelector('[name="lastname"]').value = data.lastname ?? "";
             document.querySelector('[name="suffix"]').value = data.suffix ?? "";
             document.querySelector('[name="sex"]').value = data.sex ?? "";
-document.querySelector('[name="dob"]').value =
-    data.dob ? data.dob.split("T")[0] : "";
+            document.querySelector('[name="dob"]').value = data.dob ? data.dob.split("T")[0] : "";
             document.querySelector('[name="age_year"]').value = data.age_year ?? "";
             document.querySelector('[name="age_month"]').value = data.age_month ?? "";
             document.querySelector('[name="purok_id"]').value = data.purok_id ?? "";
             document.querySelector('[name="home_add"]').value = data.home_add ?? "";
 
-            // FATHER
             document.querySelector('[name="f_firstname"]').value = data.f_firstname ?? "";
             document.querySelector('[name="f_middlename"]').value = data.f_middlename ?? "";
             document.querySelector('[name="f_lastname"]').value = data.f_lastname ?? "";
             document.querySelector('[name="f_contact"]').value = data.f_contact ?? "";
 
-            // MOTHER
             document.querySelector('[name="m_firstname"]').value = data.m_firstname ?? "";
             document.querySelector('[name="m_middlename"]').value = data.m_middlename ?? "";
             document.querySelector('[name="m_lastname"]').value = data.m_lastname ?? "";
             document.querySelector('[name="m_contact"]').value = data.m_contact ?? "";
 
-            // Store ID
             document.getElementById("infant_id").value = editingInfantId;
+
+            // very important: clear file inputs so user can optionally upload new files
+            const birthInput = document.querySelector('[name="birth_document"]');
+            const profileInput = document.querySelector('[name="profile_pic"]');
+
+            if (birthInput) birthInput.value = "";
+            if (profileInput) profileInput.value = "";
         })
         .catch(err => {
             console.error(err);
@@ -559,7 +585,7 @@ document.querySelector('[name="dob"]').value =
 function deleteInfant() {
     if (!confirm("Are you sure you want to delete this infant record?")) return;
 
-    fetch(`http://localhost:8080/infant/${currentInfantId}`, { method: "DELETE" })
+    fetch(`http://localhost:8000/infant/${currentInfantId}`, { method: "DELETE" })
         .then(res => res.json())
         .then(() => {
             alert("Infant deleted successfully");
@@ -980,7 +1006,7 @@ function deleteInfant() {
 
     if (!confirm("Are you sure you want to delete this infant record?")) return;
 
-    fetch(`http://localhost:8080/infant/delete/${currentInfantId}`, {
+    fetch(`http://localhost:8000/infant/delete/${currentInfantId}`, {
         method: "DELETE"
     })
     .then(async (res) => {

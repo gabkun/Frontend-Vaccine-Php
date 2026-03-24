@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <div class="login-container">
       <div class="login-header">
-        <img src="assets/img/logo.png" alt="Barangay Logo" class="logo">
+        <img src="assets/img/sys-logo.png" alt="Barangay Logo" class="logo">
         <div class="login-header-text">
           <h2>Vaccination System</h2>
           <p>Barangay Canlandog for Infants</p>

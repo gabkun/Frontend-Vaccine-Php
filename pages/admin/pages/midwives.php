@@ -86,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create_midwife"])) {
             "photo" => $photoPath
         ];
 
-        $url = "http://localhost:8080/midwife/create";
+        $url = "http://localhost:8000/midwife/create";
         $options = [
             "http" => [
                 "header"  => "Content-Type: application/json\r\n",
@@ -156,7 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_midwife"])) {
         $pw = trim($_POST["password"] ?? "");
         if ($pw !== "") $data["password"] = $pw;
 
-        $url = "http://localhost:8080/midwife/update/" . urlencode($id);
+        $url = "http://localhost:8000/midwife/update/" . urlencode($id);
 
         $options = [
             "http" => [
@@ -171,18 +171,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_midwife"])) {
         $result = @file_get_contents($url, false, $context);
 
         $httpStatus = getHttpStatusFromHeaders($http_response_header ?? []);
+if ($result === FALSE) {
+    echo "<script>alert('Error connecting to API (delete).');</script>";
+} else {
+    if ($httpStatus >= 200 && $httpStatus < 300) {
+        echo "<script>
+                alert('Deleted successfully ✅');
+                window.location.href = window.location.href;
+              </script>";
+    } else {
+        $response = json_decode($result, true);
+        $msg = $response["message"] ?? ("API response: " . $result);
 
-        if ($result === FALSE) {
-            echo "<script>alert('Error connecting to API (update).');</script>";
-        } else {
-            $response = json_decode($result, true);
-            $msg = $response["message"] ?? ("API response: " . $result);
-
-            if ($httpStatus < 200 || $httpStatus >= 300) $msg = "HTTP $httpStatus - " . $msg;
-
-            echo "<script>alert(" . json_encode($msg) . "); window.location.href=window.location.href;</script>";
-        }
+        echo "<script>alert(" . json_encode('HTTP ' . $httpStatus . ' - ' . $msg) . ");</script>";
     }
+}
+}
 }
 
 /* =========================================================
@@ -191,7 +195,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_midwife"])) {
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_midwife"])) {
 
     $id = $_POST["midwife_id"] ?? "";
-    $url = "http://localhost:8080/midwife/delete/" . urlencode($id);
+    $url = "http://localhost:8000/midwife/delete/" . urlencode($id);
 
     $options = [
         "http" => [
@@ -234,7 +238,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_midwife"])) {
 
       <div class="midwife-list">
         <?php
-          $apiUrl = "http://localhost:8080/midwife/get";
+          $apiUrl = "http://localhost:8000/midwife/get";
           $midwives = json_decode(@file_get_contents($apiUrl), true);
 
           if (!empty($midwives)):
@@ -322,7 +326,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_midwife"])) {
 
             <div class="modal-row">
               <input type="email" name="email" placeholder="Email Address" required>
-              <input type="text" name="phone" placeholder="Phone Number" required>
+              <input 
+                type="text" 
+                name="phone" 
+                placeholder="Phone Number"
+                inputmode="numeric" 
+                pattern="[0-9]*"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                >
             </div>
 
             <div class="modal-row file-upload-row">
@@ -477,14 +488,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_midwife"])) {
     if (e.target === editModal) editModal.style.display = "none";
   });
 
-  // =========================
-  // DELETE CONFIRM
-  // =========================
-  document.querySelectorAll(".deleteForm").forEach(form => {
-    form.addEventListener("submit", (e) => {
-      if (!confirm("Are you sure you want to delete this midwife?")) {
-        e.preventDefault();
-      }
-    });
-  });
 </script>
